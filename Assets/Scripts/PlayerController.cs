@@ -11,17 +11,19 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 dic;
     private Rigidbody2D playerRb;
-    
+
+    private SpriteRenderer playerSr;
+
     // Start is called before the first frame update
     void Start()
     {
         playerRb= GetComponent<Rigidbody2D>();
+        playerSr= GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
-        PlayerInput();       
+        PlayerInput();
     }
 
     private void PlayerInput()
@@ -32,19 +34,16 @@ public class PlayerController : MonoBehaviour
         dic = new Vector2(inputX, inputY);
 
         playerRb.velocity = dic.normalized * speed;
+
+        PlayerLookAt();
     }
 
-    /*
-    private void PlayerMove()
+    
+    private void PlayerLookAt()
     {
-        if (inputX < 0)
-        {
-            playerSr.flipX = true;
-        }
-        else
-        {
-            playerSr.flipX = false;
-        }
-    }
-    */
+        if (inputX > 0)
+            playerSr.flipX = false; // ¿À¸¥ÂÊ
+        else if (inputX < 0)
+            playerSr.flipX = true;  // ¿ÞÂÊ
+    } 
 }
