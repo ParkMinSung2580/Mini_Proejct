@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class MapNode : MonoBehaviour
 {
-    private Vector2
+    
 }
