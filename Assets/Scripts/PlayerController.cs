@@ -14,7 +14,9 @@ public class PlayerController : MonoBehaviour
 
     private SpriteRenderer playerSr;
 
-    private Vector2Int cellPosition;
+    private Coroutine moveCoroutine;
+
+    [SerializeField] private Vector2Int cellPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +38,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void FixedUpdate()
+    private void Update()
     {
         PlayerInput();
         UpdateCurrentCell();
@@ -46,17 +48,19 @@ public class PlayerController : MonoBehaviour
     {
         inputX = Input.GetAxis("Horizontal");
         inputY = Input.GetAxis("Vertical");
-        
         dic = new Vector2(inputX, inputY).normalized;
 
         //playerRb.velocity = dic.normalized * speed;
 
         PlayerLookAt();
-
-        Move(dic);
     }
 
-    
+    void FixedUpdate() 
+    {
+        playerRb.velocity = dic.normalized * speed;
+    }
+
+
     private void PlayerLookAt()
     {
         if (inputX > 0)
@@ -73,22 +77,46 @@ public class PlayerController : MonoBehaviour
 
     private void Move(Vector2 input)
     {
-        if (input == Vector2.zero)
+        // 이동은 월드 좌표로 부드럽게
+        Vector3 moveDir = (Vector3)dic.normalized;
+        transform.position += moveDir * speed * Time.deltaTime;
+
+        /*if (input.normalized == Vector2.zero)
             return;
 
-        Vector3 moveDir = input.normalized;
-        Vector3 targetPos =
-            transform.position + moveDir * speed * Time.deltaTime;
+        Vector2Int currentCell =
+            GridManager.Instance.WorldToGrid(transform.position);
 
-        Vector2Int targetCell =
-            GridManager.Instance.WorldToGrid(targetPos);
+        Vector2Int dir = new Vector2Int(
+            Mathf.RoundToInt(input.x),
+            Mathf.RoundToInt(input.y)
+        );
 
-        //if (!GridManager.Instance.IsValidCell(targetCell))
-        //    return;
+        Vector2Int nextCell = currentCell + dir;
 
-        if (!GridManager.Instance.GetCell(targetCell).isWalkable)
+        
+        if (!GridManager.Instance.HasCell(nextCell))
             return;
 
-        transform.position = targetPos;
+        
+        if (!GridManager.Instance.IsWalkable(nextCell))
+            return;
+
+
+        if (moveCoroutine == null) // 이미 이동 중이면 무시
+            moveCoroutine = StartCoroutine(MoveToCell(nextCell));*/
+
     }
+
+    /*private IEnumerator MoveToCell(Vector2Int nextCell) 
+    { 
+        Vector3 targetPos = GridManager.Instance.GridToWorld(nextCell); 
+        while ((transform.position - targetPos).sqrMagnitude > 0.01f) 
+        { 
+            transform.position = Vector3.Lerp(transform.position, targetPos, speed * Time.deltaTime); 
+            yield return null; 
+        } 
+        transform.position = targetPos;
+        moveCoroutine = null;
+    }*/
 }

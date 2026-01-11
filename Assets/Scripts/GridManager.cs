@@ -35,11 +35,7 @@ public class GridManager : MonoBehaviour
 
             Vector2Int cellPos = new Vector2Int(pos.x, pos.y);
 
-            cells[cellPos] = new CellData
-            {
-                pos = cellPos,
-                isWalkable = !wall.HasTile(pos)
-            };
+            cells[cellPos] = new CellData(cellPos, !wall.HasTile(pos));
         }
     }
 
@@ -58,7 +54,7 @@ public class GridManager : MonoBehaviour
 
     public bool IsWalkable(Vector2Int pos)
     {
-        return cells.TryGetValue(pos, out var cell) && cell.isWalkable;
+        return cells.TryGetValue(pos, out var cell) && cell.IsWalkable;
     }
 
     /* ================= Coordinate Convert ================= */
@@ -87,19 +83,19 @@ public class GridManager : MonoBehaviour
 
         foreach (var cell in cells.Values)
         {
-            Gizmos.color = cell.isWalkable
+            Gizmos.color = cell.IsWalkable
                 ? new Color(0, 1, 0, 0.35f)
                 : new Color(1, 0, 0, 0.5f);
 
             Gizmos.DrawCube(
-                GridToWorld(cell.pos),
-                Vector3.one * cellSize
+                GridToWorld(cell.Pos),
+                Vector3.one * cellSize * 0.5f
             );
 
             Gizmos.color = Color.black;
             Gizmos.DrawWireCube(
-                GridToWorld(cell.pos),
-                Vector3.one * cellSize
+                GridToWorld(cell.Pos),
+                Vector3.one * cellSize * 0.5f
             );
         }
     }
