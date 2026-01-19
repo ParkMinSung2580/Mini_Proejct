@@ -77,7 +77,7 @@ public class GridManager : MonoBehaviour
 
     /* ================= Debug ================= */
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         if (cells == null) return;
 
@@ -98,5 +98,5 @@ public class GridManager : MonoBehaviour
                 Vector3.one * cellSize * 0.5f
             );
         }
-    }
+    }*/
 }
