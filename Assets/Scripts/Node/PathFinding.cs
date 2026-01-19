@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class PathFinding : MonoBehaviour
 {
@@ -158,8 +159,8 @@ public class PathFinding : MonoBehaviour
     /// <param name="y"> y좌표값 </param>
     private void OpenListAdd(int x, int y)
     {
-        Vector2Int target= new Vector2Int(x, y);
-        CellData targetCell = GridManager.Instance.GetCell(target);
+        Vector2Int pos = new Vector2Int(x, y);
+        CellData targetCell = GridManager.Instance.GetCell(pos);
 
         //벽이면 해당 경로로 진입 불가 
         if (!targetCell.IsWalkable) return;
@@ -169,6 +170,22 @@ public class PathFinding : MonoBehaviour
 
         //만약 닫힌 리스트에 해당 노드가 존재 하면 리턴
         if (closedList.Contains(neighbor)) return;
+
+        int dx = pos.x - currentNode.cell.Pos.x;
+        int dy = pos.y - currentNode.cell.Pos.y;
+
+        bool isDiagonal = Mathf.Abs(dx) == 1 && Mathf.Abs(dy) == 1;
+
+        if (isDiagonal)
+        {
+            //
+            CellData cell1 = GridManager.Instance.GetCell(new Vector2Int(currentNode.cell.Pos.x + dx, currentNode.cell.Pos.y));
+            CellData cell2 = GridManager.Instance.GetCell(new Vector2Int(currentNode.cell.Pos.x, currentNode.cell.Pos.y + dy));
+
+            if (cell1 == null || cell2 == null) return;
+            if (!cell1.IsWalkable || !cell2.IsWalkable) return;
+        }
+
 
         int newG = currentNode.G + 10;
 
