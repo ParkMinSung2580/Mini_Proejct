@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ public class PathFinding : MonoBehaviour
     private Dictionary<CellData, Node> nodeMap;
     private Node startNode,targetNode;
 
-    private List<Node> finalNode; //¸¶Áö¸·±îÁö Ã£Àº ³ëµå
+    private List<Node> finalNode; //ë§ˆì§€ë§‰ê¹Œì§€ ì°¾ì€ ë…¸ë“œ
     private List<Node> openList, closedList;
 
     private Node currentNode;
@@ -19,40 +19,34 @@ public class PathFinding : MonoBehaviour
     {
         StartPath();
 
-        while (openList.Count > 0)
+        bool pathFound = FindingPath();
+
+        if (pathFound)
         {
-            // 1. F°¡ °¡Àå ÀÛÀº ³ëµå ¼±ÅÃ
-            currentNode = GetLowestFNode(openList);
-
-            // 2. open ¡æ closed ÀÌµ¿
-            openList.Remove(currentNode);
-            closedList.Add(currentNode);
-
-            // 3. ¸ñÇ¥ µµÂø Ã¼Å©
-            if (currentNode == targetNode)
-                break;
-
-            // 4. ÀÌ¿ô Å½»ö
-            FindingPath();
+            ShowPath();
         }
-        ShowPath();
+        else
+        {
+            Debug.LogWarning("ëª©í‘œ ì§€ì ê¹Œì§€ ê°ˆ ìˆ˜ ìˆëŠ” ê²½ë¡œê°€ ì—†ìŠµë‹ˆë‹¤.");
+            finalNode.Clear();
+        }
     }
     private void StartPath()
     {
-        //ÇöÀç °æ°èÀÇ ¿ùµå ÁÂÇ¥¸¦ cellPos·Î º¯°æ(World ¡æ Grid º¯È¯)
+        //í˜„ì¬ ê²½ê³„ì˜ ì›”ë“œ ì¢Œí‘œë¥¼ cellPosë¡œ ë³€ê²½(World â†’ Grid ë³€í™˜)
         Vector2Int startPos = GridManager.Instance.WorldToGrid(transform.position);
 
-        //Å¸°Ù ¿ùµå ÁÂÇ¥¸¦ cellPos·Î º¯°æ
+        //íƒ€ê²Ÿ ì›”ë“œ ì¢Œí‘œë¥¼ cellPosë¡œ ë³€ê²½
         Vector2Int targetPos = GridManager.Instance.WorldToGrid(target.transform.position);
 
-        //2´Ü°è: Grid ¡æ CellData
+        //2ë‹¨ê³„: Grid â†’ CellData
         CellData startCell = GridManager.Instance.GetCell(startPos);
 
         CellData targetCell = GridManager.Instance.GetCell(targetPos);
 
-        //ÃÊ±âÈ­
+        //ì´ˆê¸°í™”
         nodeMap = new Dictionary<CellData, Node>();
-        //¿ÀÇÂ ¸®½ºÆ®,Å¬·ÎÁî ¸®½ºÆ® ÃÊ±âÈ­
+        //ì˜¤í”ˆ ë¦¬ìŠ¤íŠ¸,í´ë¡œì¦ˆ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
         openList = new List<Node>();
         closedList = new List<Node>();
 
@@ -61,7 +55,7 @@ public class PathFinding : MonoBehaviour
             Vector2Int pos = kvp.Key; 
             CellData cell = kvp.Value;
 
-            //Debug.Log($"ÁÂÇ¥: {pos}, Walkable: {cell.IsWalkable}");
+            //Debug.Log($"ì¢Œí‘œ: {pos}, Walkable: {cell.IsWalkable}");
 
             nodeMap[cell] = new Node(cell);
             nodeMap[cell].G = int.MaxValue;
@@ -75,32 +69,66 @@ public class PathFinding : MonoBehaviour
 
         startNode.G = 0;
 
-        //ÃßÈÄ ÈŞ¸®½ºÆ½ÇÔ¼ö Ãß°¡
+        //ì¶”í›„ íœ´ë¦¬ìŠ¤í‹±í•¨ìˆ˜ ì¶”ê°€
         startNode.H = Heuristic(startCell, targetCell);
 
-        //¿ÀÇÂ ¸®½ºÆ®¿¡ Ãß°¡
+        //ì˜¤í”ˆ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
         openList.Add(startNode);
         
         currentNode = startNode;
     }
 
-    // ¡æ ¡è ¡ç ¡é¼ø
-    private void FindingPath()
+    // â†’ â†‘ â† â†“ìˆœ
+    private bool FindingPath()
     {
-        //½ÃÀÛ³ëµå¸¦ ±â¹İÀ¸·Î ±ÙÃ³ÀÇ ¸ğµç ³ëµå¸¦ ¿ÀÇÂ¸®½ºÆ®¿¡ Ãß°¡
+        if (openList.Count == 0 )
+        {
+            Debug.LogWarning("ì˜¤í”ˆë¦¬ìŠ¤íŠ¸ì— ê°ˆ ìˆ˜ ìˆëŠ” ë…¸ë“œê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤");
+        }
+
+        while (openList.Count > 0)
+        {
+            // 1. Fê°€ ê°€ì¥ ì‘ì€ ë…¸ë“œ ì„ íƒ
+            currentNode = GetLowestFNode(openList);
+
+            // 2. open â†’ closed ì´ë™
+            openList.Remove(currentNode);
+            closedList.Add(currentNode);
+
+            // 3. ëª©í‘œ ë„ì°© ì²´í¬
+            if (currentNode == targetNode)
+                return true;   
+
+            // 4. ì´ì›ƒ íƒìƒ‰
+            OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y);
+            OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y + 1);
+            OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y);
+            OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y - 1);
+
+            // â†— â†˜ â†™ â†– ìˆœ
+            if (diagonalMovement)
+            {
+                OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y + 1);
+                OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y - 1);
+                OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y - 1);
+                OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y + 1);
+            }
+        }
+        return false; //ê²½ë¡œ ì—†ìŒ
+        /*//ì‹œì‘ë…¸ë“œë¥¼ ê¸°ë°˜ìœ¼ë¡œ ê·¼ì²˜ì˜ ëª¨ë“  ë…¸ë“œë¥¼ ì˜¤í”ˆë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
         OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y);
         OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y + 1);
         OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y);
         OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y - 1);
 
-        // ¢Ö ¢Ù ¢× ¢Ø ¼ø
+        // â†— â†˜ â†™ â†– ìˆœ
         if (diagonalMovement)
         {
             OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y + 1);
             OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y - 1);
             OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y - 1);
             OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y + 1);
-        }
+        }*/
     }
 
     private void ShowPath()
@@ -118,28 +146,28 @@ public class PathFinding : MonoBehaviour
 
             for (int i = 0; i < finalNode.Count; i++)
             {
-                Debug.Log($"{i} ¹øÂ°´Â {finalNode[i].cell.Pos.x}, {finalNode[i].cell.Pos.y}");
+                Debug.Log($"{i} ë²ˆì§¸ëŠ” {finalNode[i].cell.Pos.x}, {finalNode[i].cell.Pos.y}");
             }
         }
     }
 
     /// <summary>
-    /// ³ëµå¸¦ Ãß°¡ ÇÏ´Â ÇÔ¼ö
+    /// ë…¸ë“œë¥¼ ì¶”ê°€ í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
-    /// <param name="x"> xÁÂÇ¥°ª </param>
-    /// <param name="y"> yÁÂÇ¥°ª </param>
+    /// <param name="x"> xì¢Œí‘œê°’ </param>
+    /// <param name="y"> yì¢Œí‘œê°’ </param>
     private void OpenListAdd(int x, int y)
     {
         Vector2Int target= new Vector2Int(x, y);
         CellData targetCell = GridManager.Instance.GetCell(target);
 
-        //º®ÀÌ¸é ÇØ´ç °æ·Î·Î ÁøÀÔ ºÒ°¡ 
+        //ë²½ì´ë©´ í•´ë‹¹ ê²½ë¡œë¡œ ì§„ì… ë¶ˆê°€ 
         if (!targetCell.IsWalkable) return;
 
-        //Å¸°Ù ¼¿ ÁÂÇ¥¸¦ ÀÌ¿ô³ëµå·Î ¸¸µë 
+        //íƒ€ê²Ÿ ì…€ ì¢Œí‘œë¥¼ ì´ì›ƒë…¸ë“œë¡œ ë§Œë“¬ 
         Node neighbor = nodeMap[targetCell];
 
-        //¸¸¾à ´İÈù ¸®½ºÆ®¿¡ ÇØ´ç ³ëµå°¡ Á¸Àç ÇÏ¸é ¸®ÅÏ
+        //ë§Œì•½ ë‹«íŒ ë¦¬ìŠ¤íŠ¸ì— í•´ë‹¹ ë…¸ë“œê°€ ì¡´ì¬ í•˜ë©´ ë¦¬í„´
         if (closedList.Contains(neighbor)) return;
 
         int newG = currentNode.G + 10;
@@ -164,31 +192,31 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    //float ´ë½Å Int°ªÀ¸·Î 
-    //¸ÇÇØÆ° °Å¸®(Manhattan Distance) - |x1 - x2| + |y1 - y2| µÎÁ¡ x1,y1°ú x2,y2 »çÀÌÀÇ ¸ÇÇØÆ° °Å¸®
+    //float ëŒ€ì‹  Intê°’ìœ¼ë¡œ 
+    //ë§¨í•´íŠ¼ ê±°ë¦¬(Manhattan Distance) - |x1 - x2| + |y1 - y2| ë‘ì  x1,y1ê³¼ x2,y2 ì‚¬ì´ì˜ ë§¨í•´íŠ¼ ê±°ë¦¬
     private int Heuristic(CellData start,CellData target)
     {
-        int value = (Mathf.Abs(start.Pos.x - target.Pos.x) + Mathf.Abs(start.Pos.y - target.Pos.y)) * 10;   //10À» °öÇÏ´Â°Ç Á¤¼ö·Î ½ºÄÉÀÏ¸µ
+        int value = (Mathf.Abs(start.Pos.x - target.Pos.x) + Mathf.Abs(start.Pos.y - target.Pos.y)) * 10;   //10ì„ ê³±í•˜ëŠ”ê±´ ì •ìˆ˜ë¡œ ìŠ¤ì¼€ì¼ë§
         //Debug.Log($"<color=yellow> Start CellPos x:{start.Pos.x}, y :{start.Pos.y}");
         //Debug.Log($"<color=green> Target CellPos x:{target.Pos.x}, y :{target.Pos.y}");
-        Debug.Log($"¸ÇÇØÆ° ÈŞ¸®½ºÆ½ ÇÔ¼ö °ª : {value}");
+        Debug.Log($"ë§¨í•´íŠ¼ íœ´ë¦¬ìŠ¤í‹± í•¨ìˆ˜ ê°’ : {value}");
         return value;
     }
 
-    //À¯Å¬¸®µå °Å¸®(Euclidean Distance) - ´ë°¢¼± ÀÌµ¿ Çã¿ë 
+    //ìœ í´ë¦¬ë“œ ê±°ë¦¬(Euclidean Distance) - ëŒ€ê°ì„  ì´ë™ í—ˆìš© 
     private int Heuristic2(CellData start,CellData target)
     {
-        // µÎ Á¡ »çÀÌÀÇ Á÷¼± °Å¸® °è»ê
+        // ë‘ ì  ì‚¬ì´ì˜ ì§ì„  ê±°ë¦¬ ê³„ì‚°
         float dx = start.Pos.x - target.Pos.x; 
         float dy = start.Pos.y - target.Pos.y;
 
         // sqrt(dx^2 + dy^2)
-        float distance = Mathf.Sqrt(dx * dx + dy * dy); //Á¦°ö±Ù
+        float distance = Mathf.Sqrt(dx * dx + dy * dy); //ì œê³±ê·¼
 
-        // ºñ¿ëÀ» Á¤¼ö·Î º¯È¯ 
+        // ë¹„ìš©ì„ ì •ìˆ˜ë¡œ ë³€í™˜ 
         int value = Mathf.RoundToInt(distance * 10);
 
-        Debug.Log($"À¯Å¬¸®µå ÈŞ¸®½ºÆ½ °ª : {value}"); 
+        Debug.Log($"ìœ í´ë¦¬ë“œ íœ´ë¦¬ìŠ¤í‹± ê°’ : {value}"); 
         return value;
     }
 
@@ -209,7 +237,7 @@ public class PathFinding : MonoBehaviour
     {
         if (GridManager.Instance == null) return;
 
-        // Open List - ÆÄ¶û
+        // Open List - íŒŒë‘
         if (openList != null)
         {
             Gizmos.color = new Color(0, 0, 1, 0.6f);
@@ -222,7 +250,7 @@ public class PathFinding : MonoBehaviour
             }
         }
 
-        // Closed List - »¡°­
+        // Closed List - ë¹¨ê°•
         if (closedList != null)
         {
             Gizmos.color = new Color(1, 0, 0, 0.6f);
@@ -235,7 +263,7 @@ public class PathFinding : MonoBehaviour
             }
         }
 
-        // Final Path - ÃÊ·Ï
+        // Final Path - ì´ˆë¡
         if (finalNode != null)
         {
             Gizmos.color = Color.green;
@@ -248,7 +276,7 @@ public class PathFinding : MonoBehaviour
             }
         }
 
-        // Current Node - ³ë¶û
+        // Current Node - ë…¸ë‘
         if (currentNode != null)
         {
             Gizmos.color = Color.yellow;
