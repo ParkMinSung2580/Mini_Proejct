@@ -32,6 +32,8 @@ public class PathFinding : MonoBehaviour
             Debug.LogWarning("목표 지점까지 갈 수 있는 경로가 없습니다.");
             finalNode.Clear();
         }
+
+        Debug.Log($"확장된 CloseList Node 수 : {closedList.Count}");
     }
     private void StartPath()
     {
@@ -73,8 +75,11 @@ public class PathFinding : MonoBehaviour
 
         startNode.G = 0;
 
-        //추후 휴리스틱함수 추가
-        startNode.H = Heuristic3(startCell, targetCell);
+        if (diagonalMovement)
+            startNode.H = Heuristic3(startCell, targetCell);
+        else
+            startNode.H = Heuristic(startCell, targetCell);
+
 
         //오픈 리스트에 추가
         openList.Add(startNode);
@@ -82,7 +87,6 @@ public class PathFinding : MonoBehaviour
         currentNode = startNode;
     }
 
-    // → ↑ ← ↓순
     private bool FindingPath()
     {
         if (openList.Count == 0 )
@@ -101,9 +105,10 @@ public class PathFinding : MonoBehaviour
 
             // 3. 목표 도착 체크
             if (currentNode == targetNode)
-                return true;   
+                return true;
 
-            // 4. 이웃 탐색
+            // 4. 이웃 탐색 
+            // → ↑ ← ↓순
             OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y);
             OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y + 1);
             OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y);
