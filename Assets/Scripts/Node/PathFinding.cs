@@ -1,11 +1,12 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class PathFinding : MonoBehaviour
 {
-    private Dictionary<CellData, Node> nodeMap;
+    private Dictionary<Vector2Int, Node> nodeMap;
     private Node startNode,targetNode;
 
     private List<Node> finalNode; //마지막까지 찾은 노드
@@ -45,8 +46,10 @@ public class PathFinding : MonoBehaviour
 
         CellData targetCell = GridManager.Instance.GetCell(targetPos);
 
+        if (startCell == null || targetCell == null) return;
+
         //초기화
-        nodeMap = new Dictionary<CellData, Node>();
+        nodeMap = new Dictionary<Vector2Int, Node>();
         //오픈 리스트,클로즈 리스트 초기화
         openList = new List<Node>();
         closedList = new List<Node>();
@@ -58,20 +61,20 @@ public class PathFinding : MonoBehaviour
 
             //Debug.Log($"좌표: {pos}, Walkable: {cell.IsWalkable}");
 
-            nodeMap[cell] = new Node(cell);
-            nodeMap[cell].G = int.MaxValue;
-            nodeMap[cell].H = int.MaxValue;
-            nodeMap[cell].parent = null;
+            nodeMap[pos] = new Node(cell);
+            nodeMap[pos].G = int.MaxValue;
+            nodeMap[pos].H = int.MaxValue;
+            nodeMap[pos].parent = null;
         }
 
         finalNode = new List<Node>();
-        startNode = nodeMap[startCell];
-        targetNode = nodeMap[targetCell];
+        startNode = nodeMap[startCell.Pos];
+        targetNode = nodeMap[targetCell.Pos];
 
         startNode.G = 0;
 
         //추후 휴리스틱함수 추가
-        startNode.H = Heuristic(startCell, targetCell);
+        startNode.H = Heuristic3(startCell, targetCell);
 
         //오픈 리스트에 추가
         openList.Add(startNode);
@@ -134,7 +137,7 @@ public class PathFinding : MonoBehaviour
 
     private void ShowPath()
     {
-        if (currentNode.cell.Pos.x == targetNode.cell.Pos.x && currentNode.cell.Pos.y == targetNode.cell.Pos.y)
+        if (currentNode == targetNode)
         {
             Node targetCurNode = currentNode;
             while (targetCurNode != startNode)
@@ -162,11 +165,14 @@ public class PathFinding : MonoBehaviour
         Vector2Int pos = new Vector2Int(x, y);
         CellData targetCell = GridManager.Instance.GetCell(pos);
 
+        //해당 좌표를 가진 targetCell이 존재하지 않을 때 return
+        if (targetCell == null) return;
+
         //벽이면 해당 경로로 진입 불가 
         if (!targetCell.IsWalkable) return;
 
         //타겟 셀 좌표를 이웃노드로 만듬 
-        Node neighbor = nodeMap[targetCell];
+        Node neighbor = nodeMap[targetCell.Pos];
 
         //만약 닫힌 리스트에 해당 노드가 존재 하면 리턴
         if (closedList.Contains(neighbor)) return;
@@ -178,7 +184,7 @@ public class PathFinding : MonoBehaviour
 
         if (isDiagonal)
         {
-            //
+            //두개만 확인 하면 된다 (좌우 둘중에 한칸,위아래 둘중에 한칸) 확인시 현재 노드의 
             CellData cell1 = GridManager.Instance.GetCell(new Vector2Int(currentNode.cell.Pos.x + dx, currentNode.cell.Pos.y));
             CellData cell2 = GridManager.Instance.GetCell(new Vector2Int(currentNode.cell.Pos.x, currentNode.cell.Pos.y + dy));
 
@@ -186,8 +192,8 @@ public class PathFinding : MonoBehaviour
             if (!cell1.IsWalkable || !cell2.IsWalkable) return;
         }
 
-
-        int newG = currentNode.G + 10;
+        int moveCost = isDiagonal ? 14 : 10;
+        int newG = currentNode.G + moveCost;
 
         if (newG < neighbor.G)
         {
@@ -195,7 +201,7 @@ public class PathFinding : MonoBehaviour
 
             if (diagonalMovement)
             {
-                neighbor.H = Heuristic2(targetCell, targetNode.cell);
+                neighbor.H = Heuristic3(targetCell, targetNode.cell);
             }
             else
             {
@@ -209,23 +215,24 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    //float 대신 Int값으로 
     //맨해튼 거리(Manhattan Distance) - |x1 - x2| + |y1 - y2| 두점 x1,y1과 x2,y2 사이의 맨해튼 거리
     private int Heuristic(CellData start,CellData target)
     {
-        int value = (Mathf.Abs(start.Pos.x - target.Pos.x) + Mathf.Abs(start.Pos.y - target.Pos.y)) * 10;   //10을 곱하는건 정수로 스케일링
-        //Debug.Log($"<color=yellow> Start CellPos x:{start.Pos.x}, y :{start.Pos.y}");
-        //Debug.Log($"<color=green> Target CellPos x:{target.Pos.x}, y :{target.Pos.y}");
+        int dx = Mathf.Abs(start.Pos.x - target.Pos.x);
+        int dy = Mathf.Abs(start.Pos.y - target.Pos.y);
+
+        int value = 10 * (dx + dy);
         Debug.Log($"맨해튼 휴리스틱 함수 값 : {value}");
-        return value;
+
+        return 10 * (dx + dy);
     }
 
     //유클리드 거리(Euclidean Distance) - 대각선 이동 허용 
     private int Heuristic2(CellData start,CellData target)
     {
         // 두 점 사이의 직선 거리 계산
-        float dx = start.Pos.x - target.Pos.x; 
-        float dy = start.Pos.y - target.Pos.y;
+        float dx = Mathf.Abs(start.Pos.x - target.Pos.x); 
+        float dy = Mathf.Abs(start.Pos.y - target.Pos.y);
 
         // sqrt(dx^2 + dy^2)
         float distance = Mathf.Sqrt(dx * dx + dy * dy); //제곱근
@@ -236,6 +243,20 @@ public class PathFinding : MonoBehaviour
         Debug.Log($"유클리드 휴리스틱 값 : {value}"); 
         return value;
     }
+
+    //옥타일 거리(Octile Distance) - 정교한 계산
+    private int Heuristic3(CellData start,CellData target)
+    {
+        int dx = Mathf.Abs(start.Pos.x - target.Pos.x);
+        int dy = Mathf.Abs(start.Pos.y - target.Pos.y);
+
+        int value = 14 * Mathf.Min(dx, dy) + 10 * (Mathf.Max(dx, dy) - Mathf.Min(dx, dy));
+
+        Debug.Log($"옥타일 휴리스틱 값 : {value}");
+        return value;
+    }
+
+
 
     private Node GetLowestFNode(List<Node> list)
     {
