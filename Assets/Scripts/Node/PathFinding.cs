@@ -1,7 +1,5 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PathFinding : MonoBehaviour
@@ -10,12 +8,18 @@ public class PathFinding : MonoBehaviour
     private Node startNode,targetNode;
 
     private List<Node> finalNode; //마지막까지 찾은 노드
-    private List<Node> openList, closedList;
+    //private List<Node> openList, closedList;
+
+    private List<Node> closedList;
+    private PriorityQueue<Node> openList;
 
     private Node currentNode;
 
     [SerializeField] private Transform target;
-    [SerializeField] private bool diagonalMovement;
+    [SerializeField] private bool diagonalMovement = false;
+
+    //휴리스틱 모드 조정
+    [SerializeField] private HeuristicMode heuristicMode = HeuristicMode.FH;
 
     private void Start()
     {
@@ -53,7 +57,7 @@ public class PathFinding : MonoBehaviour
         //초기화
         nodeMap = new Dictionary<Vector2Int, Node>();
         //오픈 리스트,클로즈 리스트 초기화
-        openList = new List<Node>();
+        openList = new PriorityQueue<Node>(new NodeComparer(HeuristicMode.FH));
         closedList = new List<Node>();
 
         foreach (var kvp in GridManager.Instance.cells)
@@ -82,8 +86,8 @@ public class PathFinding : MonoBehaviour
 
 
         //오픈 리스트에 추가
-        openList.Add(startNode);
-        
+        openList.Enqueue(startNode); // node.F = node.G + node.H
+
         currentNode = startNode;
     }
 
@@ -97,10 +101,11 @@ public class PathFinding : MonoBehaviour
         while (openList.Count > 0)
         {
             // 1. F가 가장 작은 노드 선택
-            currentNode = GetLowestFNode(openList);
+            //currentNode = GetLowestFNode(openList);
+            currentNode = openList.Dequeue();
 
             // 2. open → closed 이동
-            openList.Remove(currentNode);
+            //openList.Remove(currentNode);
             closedList.Add(currentNode);
 
             // 3. 목표 도착 체크
@@ -215,8 +220,7 @@ public class PathFinding : MonoBehaviour
 
             neighbor.parent = currentNode;
 
-            if (!openList.Contains(neighbor))
-                openList.Add(neighbor);
+            openList.Enqueue(neighbor);
         }
     }
 
@@ -260,8 +264,6 @@ public class PathFinding : MonoBehaviour
         Debug.Log($"옥타일 휴리스틱 값 : {value}");
         return value;
     }
-
-
 
     private Node GetLowestFNode(List<Node> list)
     {

@@ -1,0 +1,1 @@
+public enum HeuristicMode { FH, FG, H ,F}

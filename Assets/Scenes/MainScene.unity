@@ -25638,7 +25638,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 474777039}
-  diagonalMovement: 1
+  diagonalMovement: 0
+  heuristicMode: 3
 --- !u!1 &1788200687
 GameObject:
   m_ObjectHideFlags: 0

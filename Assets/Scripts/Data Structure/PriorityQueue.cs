@@ -2,15 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PriorityQueue<T>
+public class PriorityQueue<T> : IEnumerable<T>
 {
-    private List<(T item, int priority)> heap = new List<(T, int)>();
+    private List<T> heap = new List<T>();
+    private IComparer<T> comparer;
+    // 생성자: 비교 규칙을 외부에서 주입
+    public PriorityQueue(IComparer<T> comparer) 
+    { 
+        this.comparer = comparer;  
+    }
+
+    public int Count => heap.Count;
     //private int Compare(int i, int j) => heap[i].priority.CompareTo(heap[j].priority);
 
-    private void Enqueue(T item,int priority)
+    public void Enqueue(T item)
     {
         //리스트 끝부분에 추가
-        heap.Add((item,priority));
+        heap.Add(item);
 
         //끝 부분의 인덱스를 들고오고 
         int i = heap.Count - 1;
@@ -21,18 +29,27 @@ public class PriorityQueue<T>
             int parent = (i - 1) / 2;
 
             //현재 i가 parent보다 우선순위가 크면 멈추고 
-            if (heap[i].priority >= heap[parent].priority) break;
+            //if (heap[i].priority >= heap[parent].priority) break;
+            if (comparer.Compare(heap[i], heap[parent]) >= 0) break;
 
             //그렇지 않으면 변경해줘야한다 swap
             (heap[i], heap[parent]) = (heap[parent], heap[i]);
             i = parent;
         }
+
+        if (heap[i] is Node node)
+        {
+            Debug.Log($"<color=yellow>들어간 노드의 H 휴리스틱 값 : {node.H}</color>");
+        }
     }
 
-    private T Dequeue()
+    public T Dequeue()
     {
-        //깜빡 추가 -
-        if (heap.Count == 0) {Debug.Log("heap이 비어 있습니다");
+        //깜빡 추가     
+        if (heap.Count == 0)
+        {
+            Debug.Log("heap이 비어 있습니다");
+        }
 
         int last = heap.Count - 1;
 
@@ -42,10 +59,11 @@ public class PriorityQueue<T>
         var root = heap[last];
         heap.RemoveAt(last);
 
+        //나가는 조건은 자식이 없을 경우 나 보다 작은 자식을 없을 경우
         int i = 0;
-        while (i < heap.Count)
+        while (true)
         {
-            int left = i * 2 + 1; 
+            int left = i * 2 + 1;
             int right = i * 2 + 2;
             if (left >= heap.Count) break;
 
@@ -54,26 +72,22 @@ public class PriorityQueue<T>
 
             //오른쪽 왼쪽 자식이 있는지 확인해 보고 둘중에 어떤 것이 더 큰지 확인한다.
             //만약 왼쪽보다 오른쪽이 더 작으면 오른쪽자식으로 이동해야한다.
-            if (right < heap.Count && heap[right].priority < heap[left].priority) smallest = right;
+            if (right < heap.Count && comparer.Compare(heap[right], heap[left]) < 0) smallest = right;
 
-            //현재 내가 왼쪽 자식보다 우선순위가 높으면 반복을 멈춘다.
-            if (heap[i].priority <= heap[smallest].priority) break;
+            //현재 내가 자식보다 우선순위가 높으면 반복을 멈춘다.
+            if (comparer.Compare(heap[i], heap[smallest]) <= 0) break;
 
             //위치 변경 swap
-            (heap[i], heap[smallest]) = (heap[smallest], heap[i]); 
+            (heap[i], heap[smallest]) = (heap[smallest], heap[i]);
 
             //i값을 변경하여 반복한다.
             i = smallest;
         }
-
-        return root.item;
+        return root;
     }
 
-    private T Peek()
-    {
-
-    }
-
+    public IEnumerator<T> GetEnumerator() => heap.GetEnumerator(); 
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     /*
         https://learn.microsoft.com/ko-kr/dotnet/fundamentals/code-analysis/style-rules/ide0180
 
@@ -89,5 +103,5 @@ public class PriorityQueue<T>
 
         // Fixed code.
         (numbers[1], numbers[0]) = (numbers[0], numbers[1]);
-     */
+    */
 }
