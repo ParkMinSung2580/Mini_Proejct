@@ -56,8 +56,8 @@ public class PathFinding : MonoBehaviour
 
         //초기화
         nodeMap = new Dictionary<Vector2Int, Node>();
-        //오픈 리스트,클로즈 리스트 초기화
-        openList = new PriorityQueue<Node>(new NodeComparer(HeuristicMode.FH));
+        //오픈 리스트,클로즈 리스트 초기화    
+        openList = new PriorityQueue<Node>(new NodeComparer(heuristicMode));
         closedList = new List<Node>();
 
         foreach (var kvp in GridManager.Instance.cells)
@@ -96,6 +96,7 @@ public class PathFinding : MonoBehaviour
         if (openList.Count == 0 )
         {
             Debug.LogWarning("오픈리스트에 갈 수 있는 노드가 존재하지 않습니다");
+            return false;
         }
 
         while (openList.Count > 0)
@@ -173,20 +174,21 @@ public class PathFinding : MonoBehaviour
     private void OpenListAdd(int x, int y)
     {
         Vector2Int pos = new Vector2Int(x, y);
-        CellData targetCell = GridManager.Instance.GetCell(pos);
+        CellData neighbor = GridManager.Instance.GetCell(pos);
 
-        //해당 좌표를 가진 targetCell이 존재하지 않을 때 return
-        if (targetCell == null) return;
+        //해당 좌표를 가진 이웃셀이 존재하지 않을 때 return
+        if (neighbor == null) return;
 
         //벽이면 해당 경로로 진입 불가 
-        if (!targetCell.IsWalkable) return;
+        if (!neighbor.IsWalkable) return;
 
         //타겟 셀 좌표를 이웃노드로 만듬 
-        Node neighbor = nodeMap[targetCell.Pos];
+        Node neighborNode = nodeMap[neighbor.Pos];
 
         //만약 닫힌 리스트에 해당 노드가 존재 하면 리턴
-        if (closedList.Contains(neighbor)) return;
+        if (closedList.Contains(neighborNode)) return;
 
+        //대각선 이동인지 확인
         int dx = pos.x - currentNode.cell.Pos.x;
         int dy = pos.y - currentNode.cell.Pos.y;
 
@@ -205,23 +207,26 @@ public class PathFinding : MonoBehaviour
         int moveCost = isDiagonal ? 14 : 10;
         int newG = currentNode.G + moveCost;
 
-        if (newG < neighbor.G)
+        if (newG < neighborNode.G)
         {
-            neighbor.G = newG;
+            neighborNode.G = newG;
 
             if (diagonalMovement)
             {
-                neighbor.H = Heuristic3(targetCell, targetNode.cell);
+                neighborNode.H = Heuristic3(neighbor, targetNode.cell);
             }
             else
             {
-                neighbor.H = Heuristic(targetCell, targetNode.cell);
+                neighborNode.H = Heuristic(neighbor, targetNode.cell);
             }
 
-            neighbor.parent = currentNode;
+            neighborNode.parent = currentNode;
 
-            openList.Enqueue(neighbor);
+            openList.Enqueue(neighborNode);
         }
+
+        openList.DebugPrintHeap();
+        Debug.Log($"Heap valid: {openList.ValidateHeap()}");
     }
 
     //맨해튼 거리(Manhattan Distance) - |x1 - x2| + |y1 - y2| 두점 x1,y1과 x2,y2 사이의 맨해튼 거리
@@ -253,7 +258,7 @@ public class PathFinding : MonoBehaviour
         return value;
     }
 
-    //옥타일 거리(Octile Distance) - 정교한 계산
+    //옥타일 거리(Octile Distance) - Grid기반 정교한 계산
     private int Heuristic3(CellData start,CellData target)
     {
         int dx = Mathf.Abs(start.Pos.x - target.Pos.x);

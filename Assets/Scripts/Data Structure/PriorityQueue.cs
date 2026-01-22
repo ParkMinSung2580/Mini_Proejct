@@ -86,6 +86,41 @@ public class PriorityQueue<T> : IEnumerable<T>
         return root;
     }
 
+    public void DebugPrintHeap()
+    {
+        int index = 0;
+        foreach (var item in heap)
+        {
+            if (item is Node node)
+            {
+                Debug.Log(
+                    $"<color=yellow>" +
+                    $"F:{node.F} G:{node.G} H:{node.H}" +
+                    $"</color>"
+                );
+            }
+            index++;
+        }
+    }
+
+    public bool ValidateHeap()
+    {
+        if (heap.Count == 0) return true;
+            
+        for (int i = 0; i < heap.Count; i++)
+        {
+            int left = i * 2 + 1;
+            int right = i * 2 + 2;
+
+            if (left < heap.Count && comparer.Compare(heap[i], heap[left]) > 0)
+                return false;
+
+            if (right < heap.Count && comparer.Compare(heap[i], heap[right]) > 0)
+                return false;
+        }
+        return true;
+    }
+
     public IEnumerator<T> GetEnumerator() => heap.GetEnumerator(); 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     /*
