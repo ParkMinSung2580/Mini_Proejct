@@ -21,6 +21,36 @@ public class PathFinding : MonoBehaviour
     //휴리스틱 모드 조정
     [SerializeField] private HeuristicMode heuristicMode = HeuristicMode.FH;
 
+    private static readonly Vector2Int[] Dir4 =
+    {
+        Vector2Int.right,
+        Vector2Int.up,
+        Vector2Int.left,
+        Vector2Int.down
+    };
+
+    private static readonly Vector2Int[] Dir8 =
+    {
+        Vector2Int.right,
+        Vector2Int.up,
+        Vector2Int.left,
+        Vector2Int.down,
+        new Vector2Int(1, 1),
+        new Vector2Int(1, -1),
+        new Vector2Int(-1, -1),
+        new Vector2Int(-1, 1),
+    };
+
+    //Fisher-Yates shuffle
+    private void Shuffle(Vector2Int[] array)
+    {
+        for (int i = array.Length - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (array[i], array[j]) = (array[j], array[i]);
+        }
+    }
+
     private void Start()
     {
         StartPath();
@@ -65,8 +95,6 @@ public class PathFinding : MonoBehaviour
             Vector2Int pos = kvp.Key; 
             CellData cell = kvp.Value;
 
-            //Debug.Log($"좌표: {pos}, Walkable: {cell.IsWalkable}");
-
             nodeMap[pos] = new Node(cell);
             nodeMap[pos].G = int.MaxValue;
             nodeMap[pos].H = int.MaxValue;
@@ -79,11 +107,7 @@ public class PathFinding : MonoBehaviour
 
         startNode.G = 0;
 
-        if (diagonalMovement)
-            startNode.H = Heuristic3(startCell, targetCell);
-        else
-            startNode.H = Heuristic(startCell, targetCell);
-
+        startNode.H = diagonalMovement ? Octile(startCell, targetCell) : Manhattan(startCell, targetCell);
 
         //오픈 리스트에 추가
         openList.Enqueue(startNode); // node.F = node.G + node.H
@@ -105,6 +129,10 @@ public class PathFinding : MonoBehaviour
             //currentNode = GetLowestFNode(openList);
             currentNode = openList.Dequeue();
 
+            //이미 닫힌 노드에 있으면 패스
+            if (closedList.Contains(currentNode))
+                continue;
+
             // 2. open → closed 이동
             //openList.Remove(currentNode);
             closedList.Add(currentNode);
@@ -115,6 +143,16 @@ public class PathFinding : MonoBehaviour
 
             // 4. 이웃 탐색 
             // → ↑ ← ↓순
+            //Vector2Int[] dirs = diagonalMovement ? Dir8 : Dir4;
+            //Shuffle(dirs);
+
+            /*foreach (var d in dirs)
+            {
+                OpenListAdd(
+                    currentNode.cell.Pos.x + d.x,
+                    currentNode.cell.Pos.y + d.y
+                );
+            }*/
             OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y);
             OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y + 1);
             OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y);
@@ -130,20 +168,6 @@ public class PathFinding : MonoBehaviour
             }
         }
         return false; //경로 없음
-        /*//시작노드를 기반으로 근처의 모든 노드를 오픈리스트에 추가
-        OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y);
-        OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y + 1);
-        OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y);
-        OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y - 1);
-
-        // ↗ ↘ ↙ ↖ 순
-        if (diagonalMovement)
-        {
-            OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y + 1);
-            OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y - 1);
-            OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y - 1);
-            OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y + 1);
-        }*/
     }
 
     private void ShowPath()
@@ -186,7 +210,7 @@ public class PathFinding : MonoBehaviour
         Node neighborNode = nodeMap[neighbor.Pos];
 
         //만약 닫힌 리스트에 해당 노드가 존재 하면 리턴
-        if (closedList.Contains(neighborNode)) return;
+        //if (closedList.Contains(neighborNode)) return;
 
         //대각선 이동인지 확인
         int dx = pos.x - currentNode.cell.Pos.x;
@@ -211,26 +235,19 @@ public class PathFinding : MonoBehaviour
         {
             neighborNode.G = newG;
 
-            if (diagonalMovement)
-            {
-                neighborNode.H = Heuristic3(neighbor, targetNode.cell);
-            }
-            else
-            {
-                neighborNode.H = Heuristic(neighbor, targetNode.cell);
-            }
+            neighborNode.H = diagonalMovement ? Octile(neighbor, targetNode.cell) : Manhattan(neighbor, targetNode.cell);
 
             neighborNode.parent = currentNode;
 
-            openList.Enqueue(neighborNode);
+            openList.Enqueue(neighborNode);           
         }
 
-        openList.DebugPrintHeap();
-        Debug.Log($"Heap valid: {openList.ValidateHeap()}");
+        //openList.DebugPrintHeap();
+        //Debug.Log($"Heap valid: {openList.ValidateHeap()}");
     }
 
     //맨해튼 거리(Manhattan Distance) - |x1 - x2| + |y1 - y2| 두점 x1,y1과 x2,y2 사이의 맨해튼 거리
-    private int Heuristic(CellData start,CellData target)
+    private int Manhattan(CellData start,CellData target)
     {
         int dx = Mathf.Abs(start.Pos.x - target.Pos.x);
         int dy = Mathf.Abs(start.Pos.y - target.Pos.y);
@@ -242,7 +259,7 @@ public class PathFinding : MonoBehaviour
     }
 
     //유클리드 거리(Euclidean Distance) - 대각선 이동 허용 
-    private int Heuristic2(CellData start,CellData target)
+    private int Euclidean(CellData start,CellData target)
     {
         // 두 점 사이의 직선 거리 계산
         float dx = Mathf.Abs(start.Pos.x - target.Pos.x); 
@@ -258,18 +275,21 @@ public class PathFinding : MonoBehaviour
         return value;
     }
 
-    //옥타일 거리(Octile Distance) - Grid기반 정교한 계산
-    private int Heuristic3(CellData start,CellData target)
+    //옥타일 거리(Octile Distance) - Grid 기반 정교한 계산
+    private int Octile(CellData start,CellData target)
     {
         int dx = Mathf.Abs(start.Pos.x - target.Pos.x);
         int dy = Mathf.Abs(start.Pos.y - target.Pos.y);
 
-        int value = 14 * Mathf.Min(dx, dy) + 10 * (Mathf.Max(dx, dy) - Mathf.Min(dx, dy));
+        int value = 
+            14 * Mathf.Min(dx, dy) + 
+            10 * (Mathf.Max(dx, dy) - Mathf.Min(dx, dy));
 
         Debug.Log($"옥타일 휴리스틱 값 : {value}");
         return value;
     }
 
+    /*
     private Node GetLowestFNode(List<Node> list)
     {
         Node best = list[0];
@@ -281,7 +301,7 @@ public class PathFinding : MonoBehaviour
         }
 
         return best;
-    }
+    }*/
 
     private void OnDrawGizmos()
     {

@@ -1,3 +1,3 @@
-public enum HeuristicMode { FH, FG, H ,F}
+public enum HeuristicMode { FHG, FH, FG, F}
 
 public enum PersonSortMode { Name,Age,Both}
