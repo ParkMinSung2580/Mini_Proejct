@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PathFinding : MonoBehaviour
@@ -143,17 +144,20 @@ public class PathFinding : MonoBehaviour
 
             // 4. 이웃 탐색 
             // → ↑ ← ↓순
-            //Vector2Int[] dirs = diagonalMovement ? Dir8 : Dir4;
-            //Shuffle(dirs);
+            Vector2Int[] dirs = diagonalMovement ? Dir8 : Dir4;
+            Shuffle(dirs);
 
-            /*foreach (var d in dirs)
+            foreach (var d in dirs)
             {
                 OpenListAdd(
                     currentNode.cell.Pos.x + d.x,
                     currentNode.cell.Pos.y + d.y
                 );
-            }*/
-            OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y);
+            }
+
+            #region OpenListAdd 순서가 있을 때
+            // → ↑ ← ↓순
+            /*OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y);
             OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y + 1);
             OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y);
             OpenListAdd(currentNode.cell.Pos.x, currentNode.cell.Pos.y - 1);
@@ -165,7 +169,8 @@ public class PathFinding : MonoBehaviour
                 OpenListAdd(currentNode.cell.Pos.x + 1, currentNode.cell.Pos.y - 1);
                 OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y - 1);
                 OpenListAdd(currentNode.cell.Pos.x - 1, currentNode.cell.Pos.y + 1);
-            }
+            }*/
+            #endregion
         }
         return false; //경로 없음
     }
@@ -220,7 +225,7 @@ public class PathFinding : MonoBehaviour
 
         if (isDiagonal)
         {
-            //두개만 확인 하면 된다 (좌우 둘중에 한칸,위아래 둘중에 한칸) 확인시 현재 노드의 
+            //두개만 확인 하면 된다 (좌우 둘중에 한칸,위아래 둘중에 한칸)
             CellData cell1 = GridManager.Instance.GetCell(new Vector2Int(currentNode.cell.Pos.x + dx, currentNode.cell.Pos.y));
             CellData cell2 = GridManager.Instance.GetCell(new Vector2Int(currentNode.cell.Pos.x, currentNode.cell.Pos.y + dy));
 
@@ -355,5 +360,23 @@ public class PathFinding : MonoBehaviour
                 Vector3.one * GridManager.Instance.cellSize * 0.5f
             );
         }
+
+#if UNITY_EDITOR
+        foreach (var node in closedList)
+        {
+            Handles.Label(
+                node.cell.Pos + Vector2.up * 0.2f,
+                $"F:{node.F}\nG:{node.G}\nH:{node.H}"
+            );
+        }
+
+        foreach (var node in openList)
+        {
+            Handles.Label(
+                node.cell.Pos + Vector2.up * 0.2f,
+                $"F:{node.F}\nG:{node.G}\nH:{node.H}"
+            );
+        }
+#endif
     }
 }
