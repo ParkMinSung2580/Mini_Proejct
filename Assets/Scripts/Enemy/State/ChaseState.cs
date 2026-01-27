@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class ChaseState : EnemyStateBase
 {
-    public ChaseState(Enemy enemy, EnemyStateMachine fsm) : base(enemy, fsm) { }
+    public ChaseState(Enemy enemy, StateMachine fsm) : base(enemy, fsm) { }
 
     public override void Enter()
     { 
-        Debug.Log("Chase 시작");
+        enemy.SavePreChasePosition();
     }
     public override void Update()
     {
@@ -17,5 +17,6 @@ public class ChaseState : EnemyStateBase
             fsm.ChangeState(new IdleState(enemy, fsm));
         }
     }
-    public override void Exit() { Debug.Log("Chase 종료"); }
+    public override void Exit() { 
+    }
 }

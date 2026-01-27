@@ -16,14 +16,14 @@ public class Enemy : MonoBehaviour
     public SpriteRenderer sr;
     public Transform Player { get; private set; }
 
-    public EnemyStateMachine FSM { get; private set; }
+    public StateMachine FSM { get; private set; }
 
     [SerializeField] string currentStateName; // 현재 상태 디버깅
     public EnemyContext Context { get; private set; }
 
     void Awake()
     {
-        FSM = GetComponent<EnemyStateMachine>();
+        FSM = GetComponent<StateMachine>();
         FSM.ChangeState(new IdleState(this, FSM));
         Context = new EnemyContext(this);
     }
@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour
         if(Player == null) Player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
-    void Update() { FSM.Update(); currentStateName = FSM.GetStateString(); }
+    void Update() { FSM.Update(); currentStateName = FSM.GetStateName(); }
 
 
     public bool CanSeePlayer()
@@ -97,7 +97,17 @@ public class Enemy : MonoBehaviour
             StopCoroutine(coroutine);
     }
 
-    //Enemy 추격 전 Pos
+    //Enemy 추격 전 Pos 저장
+    public void SavePreChasePosition()
+    {
+        HomePosition = transform.position;
+    }
+
+    // A* ClosePath를 반대로 되돌아가야겠는데
+    public void Return()
+    {
+
+    }
 
 }
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IEnemyState 
+public interface IState 
 {
     void Enter(); 
     void Update(); 

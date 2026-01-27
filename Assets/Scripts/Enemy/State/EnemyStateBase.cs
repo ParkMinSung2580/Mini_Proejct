@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class EnemyStateBase : IEnemyState
+public abstract class EnemyStateBase : IState
 {
     protected Enemy enemy;
-    protected EnemyStateMachine fsm;
-    protected EnemyStateBase(Enemy enemy, EnemyStateMachine fsm)
+    protected StateMachine fsm;
+    protected EnemyStateBase(Enemy enemy, StateMachine fsm)
     {
         this.enemy = enemy;
         this.fsm = fsm;
     }
 
-    public virtual void Enter() { }
+    public virtual void Enter() { Debug.Log($"{enemy.FSM.GetStateName()} Enter"); }
     public virtual void Update( ) { }
-    public virtual void Exit() { }
+    public virtual void Exit() { Debug.Log($"{enemy.FSM.GetStateName()} Exit"); }
 }

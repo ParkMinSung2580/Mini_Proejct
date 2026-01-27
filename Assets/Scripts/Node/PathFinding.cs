@@ -361,7 +361,7 @@ public class PathFinding : MonoBehaviour
             );
         }
 
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR    
         foreach (var node in closedList)
         {
             Handles.Label(
@@ -377,6 +377,6 @@ public class PathFinding : MonoBehaviour
                 $"F:{node.F}\nG:{node.G}\nH:{node.H}"
             );
         }
-#endif
+#endif*/
     }
 }

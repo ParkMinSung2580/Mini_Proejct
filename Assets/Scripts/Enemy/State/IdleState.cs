@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class IdleState : EnemyStateBase
 {
-    public IdleState(Enemy enemy, EnemyStateMachine fsm) : base(enemy, fsm) { }
+    public IdleState(Enemy enemy, StateMachine fsm) : base(enemy, fsm) { }
 
-    public override void Enter() { Debug.Log("Idle 시작"); }
+    public override void Enter() { base.Enter(); }
     public override void Update()
     {
 
     }
-    public override void Exit() { Debug.Log("Idle 종료"); }
+    public override void Exit() { base.Exit(); }
 }
