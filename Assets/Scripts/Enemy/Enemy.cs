@@ -6,28 +6,36 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] public EnemyData data;
+    public EnemyData Data => data;
+
+    public Vector2 HomePosition { get; private set; }
+
     [SerializeField] Vector3 eyeOffset = new Vector2(0, 1);
+    [SerializeField] public Animator animator;
+
     public SpriteRenderer sr;
     public Transform Player { get; private set; }
 
-    private IEnemyState currentState;
+    public EnemyStateMachine FSM { get; private set; }
+
+    [SerializeField] string currentStateName; // 현재 상태 디버깅
+    public EnemyContext Context { get; private set; }
+
+    void Awake()
+    {
+        FSM = GetComponent<EnemyStateMachine>();
+        FSM.ChangeState(new IdleState(this, FSM));
+        Context = new EnemyContext(this);
+    }
 
 
     private void Start()
     {
         if(Player == null) Player = GameObject.FindGameObjectWithTag("Player").transform;
-
-        ChangeState(new IdleState());
     }
 
-    void Update() { currentState?.Update(this); }
+    void Update() { FSM.Update(); currentStateName = FSM.GetStateString(); }
 
-    public void ChangeState(IEnemyState newState)
-    {
-        currentState?.Exit(this);
-        currentState = newState;
-        currentState.Enter(this);
-    }
 
     public bool CanSeePlayer()
     {
@@ -77,6 +85,19 @@ public class Enemy : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawLine(origin, origin + (Vector3)fov * data.visionRange);
     }
+
+    public Coroutine RunCoroutine(IEnumerator routine)
+    {
+        return StartCoroutine(routine);
+    }
+
+    public void StopRunningCoroutine(Coroutine coroutine)
+    {
+        if (coroutine != null)
+            StopCoroutine(coroutine);
+    }
+
+    //Enemy 추격 전 Pos
 
 }
 

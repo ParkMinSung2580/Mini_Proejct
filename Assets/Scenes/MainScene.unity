@@ -21570,7 +21570,7 @@ GameObject:
   - component: {fileID: 1113154322}
   - component: {fileID: 1113154324}
   m_Layer: 0
-  m_Name: enemies (29)
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21679,6 +21679,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: cb795aea2033bae4dbab09783bdd4e81, type: 2}
   eyeOffset: {x: 0, y: 1, z: 0}
+  animator: {fileID: 1113154322}
   sr: {fileID: 1113154323}
 --- !u!1 &1130711511
 GameObject:

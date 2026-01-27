@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IdleState : EnemyStateBase
-{
-    public IdleState(Enemy enemy, EnemyStateMachine fsm) : base(enemy, fsm) { }
+public class ReturnState : EnemyStateBase
+{ 
+    public ReturnState(Enemy enemy, EnemyStateMachine fsm) : base(enemy, fsm) { }
 
     public override void Enter() { Debug.Log("Idle Ω√¿€"); }
     public override void Update()
