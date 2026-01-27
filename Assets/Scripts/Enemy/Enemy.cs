@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IStateContext<Enemy>
 {
     [SerializeField] public EnemyData data;
     public EnemyData Data => data;
@@ -16,15 +16,16 @@ public class Enemy : MonoBehaviour
     public SpriteRenderer sr;
     public Transform Player { get; private set; }
 
-    public StateMachine FSM { get; private set; }
-
+    
     [SerializeField] string currentStateName; // 현재 상태 디버깅
     public EnemyContext Context { get; private set; }
 
+    private StateMachine<Enemy> fsm = new();
+    public StateMachine<Enemy> FSM => fsm; //get노출 
+
     void Awake()
     {
-        FSM = GetComponent<StateMachine>();
-        FSM.ChangeState(new IdleState(this, FSM));
+        fsm.ChangeState(new IdleState(),this);
         Context = new EnemyContext(this);
     }
 
@@ -34,7 +35,7 @@ public class Enemy : MonoBehaviour
         if(Player == null) Player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
-    void Update() { FSM.Update(); currentStateName = FSM.GetStateName(); }
+    void Update() { fsm.UpdateState(this); currentStateName = fsm.GetStateName(); }
 
 
     public bool CanSeePlayer()

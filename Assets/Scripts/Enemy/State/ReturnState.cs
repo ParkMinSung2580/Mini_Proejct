@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ReturnState : EnemyStateBase
+public class ReturnState : BaseState<Enemy>
 { 
-    public ReturnState(Enemy enemy, StateMachine fsm) : base(enemy, fsm) { }
 
-    public override void Enter() { }
-    public override void Update()
+
+    public override void Enter(Enemy enemy) { base.Enter(enemy); }
+    public override void Update(Enemy enemy)
     {
 
     }
-    public override void Exit() { }
+    public override void Exit(Enemy enemy) { base.Exit(enemy); }
 }

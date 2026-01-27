@@ -2,21 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateMachine : MonoBehaviour
+public class StateMachine<T>
 {
-    private IState currentState;
-    public IState CurrentState => currentState;
+    private IState<T> currentState;
+    public IState<T> CurrentState => currentState;
 
-    public void ChangeState(IState nextState)
+    public void ChangeState(IState<T> nextState, T context)
     {
-        currentState?.Exit();
+        currentState?.Exit(context);
         currentState = nextState;
-        currentState.Enter();
+        currentState.Enter(context);
     }
 
-    public void Update()
+    public void UpdateState(T context)
     {
-        currentState?.Update();
+        currentState?.Update(context);
     }
 
     public string GetStateName()

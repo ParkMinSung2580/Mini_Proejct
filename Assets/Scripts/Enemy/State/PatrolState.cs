@@ -2,23 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PatrolState : EnemyStateBase
+public class PatrolState : BaseState<Enemy>
 {
-    public PatrolState(Enemy enemy, EnemyStateMachine fsm) : base(enemy, fsm) { }
-
-    public override void Enter()
+    public override void Enter(Enemy enemy)
     {
         Debug.Log("Patrol 시작");
         enemy.animator.SetBool("IsMove", true);
     }
-    public override void Update()
+    public override void Update(Enemy enemy)
     {
         if (enemy.CanSeePlayer())
         {
-            fsm.ChangeState(new ChaseState(enemy, fsm));
+            enemy.FSM.ChangeState(new ChaseState(),enemy);
         }
     }
-    public override void Exit() 
+    public override void Exit(Enemy enemy) 
     {
         Debug.Log("Patrol 종료");
     }

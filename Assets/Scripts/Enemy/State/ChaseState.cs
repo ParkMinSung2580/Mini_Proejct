@@ -2,21 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChaseState : EnemyStateBase
+public class ChaseState : BaseState<Enemy>
 {
-    public ChaseState(Enemy enemy, StateMachine fsm) : base(enemy, fsm) { }
 
-    public override void Enter()
-    { 
+
+    public override void Enter(Enemy enemy)
+    {
+        base.Enter(enemy);
         enemy.SavePreChasePosition();
     }
-    public override void Update()
+    public override void Update(Enemy enemy)
     {
         if (!enemy.CanSeePlayer())
         {
-            fsm.ChangeState(new IdleState(enemy, fsm));
+            enemy.FSM.ChangeState(new IdleState(),enemy);
         }
     }
-    public override void Exit() { 
+    public override void Exit(Enemy enemy) { 
+        base.Exit(enemy);
     }
 }
