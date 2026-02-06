@@ -12,22 +12,24 @@ public class ItemInstance
     public Guid InstanceId => Guid.Parse(instanceId);
 
     public ItemData Data { get; private set; }
-    public int StackCount { get; private set; }
+    public int Count { get; set; }
+
+    public int MaxCount { get => Data.maxStack; }
 
     public ItemInstance(ItemData data, int stackCount = 1)
     {
         instanceId = Guid.NewGuid().ToString(); 
         Data = data;
-        StackCount = stackCount;
+        Count = stackCount;
     }
 
     public void DecreaseStack(int amount)
     {
-        StackCount -= amount;
+        Count -= amount;
     }
 
     public void IncreaseStack(int amount)
     {
-        StackCount += amount;
+        Count += amount;
     }
 }

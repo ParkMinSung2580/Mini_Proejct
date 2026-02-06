@@ -2,44 +2,136 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Inventory
 {
+    private List<InventoryBag> bags;
+
     private Dictionary<Guid, ItemInstance> items;
 
     public Inventory()
     {
+        InventoryBag initBag = new(20);             //초기가방 
+        bags = new List<InventoryBag>
+        {
+            initBag
+        };
+
         items = new Dictionary<Guid, ItemInstance>();
     }
 
-    private bool TryAddStackable(ItemInstance incoming)
+    public int GetBagsSize()
     {
-        foreach (var existing in items.Values)
+        int size = 0;
+        foreach(var bag in bags)
         {
-            if (existing.Data != incoming.Data) continue;
-            if (existing.StackCount >= existing.Data.maxStack) continue;
+            size += bag.Slots.Length;
+        }
+        return size;
+    }
 
-            int space = existing.Data.maxStack - existing.StackCount;
-            int move = Mathf.Min(space, incoming.StackCount);
+    public int GetEmptyBagsSize()
+    {
+        int size = 0;
+        foreach (var bag in bags)
+        {
+            foreach(var Slot in bag.Slots)
+            {
+                if(Slot.IsEmpty)
+                {
+                    size++;
+                }
+            }
+        }
+        return size;
+    }
 
-            existing.IncreaseStack(move);
+    // 가방 순서 기준으로 가장 앞에 있는 빈 슬롯을 반환
+    public InventorySlot FindFirstEmptySlot()
+    {
+        //처음 백부터 뒤져서 
+        foreach (var bag in bags)
+        {
+            foreach (var slot in bag.Slots)
+            {
+                if (slot.IsEmpty)
+                {
+                    return slot;
+                }
+            }
+        }
+        return null;
+    }
+
+    /*public InventorySlot FindCombineSlot(ItemInstance item)
+    {
+        //같은 아이템이 존재하면 만약 Stackable인 친구이면 Combine할 Slot을 찾아줘야함.
+        foreach (var bag in bags)
+        {
+            foreach (var slot in bag.Slots)
+            {
+                if (item == slot.Item)
+                {
+                    
+                }
+            }
+        }
+        return null;
+    }*/
+
+    //해당 아이템과 같은 Stack형 아이템이 bag안에 있는지 조사하는 함수
+    private bool TryFindCombineSlot(ItemInstance incoming,out InventorySlot result)
+    {
+        result = null;
+
+        if (incoming == null)
+            return false;
+
+        if (!incoming.Data.IsStackable)
+            return false;
+
+        foreach (var bag in bags)
+        {
+            foreach (var slot in bag.Slots)
+            {
+                if (slot.CanStack(incoming))
+                {
+                    result = slot;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private bool AddStackable(ItemInstance incoming)
+    {
+        while (incoming.Count > 0 && TryFindCombineSlot(incoming, out var combineSlot))
+        {
+            var target = combineSlot;
+
+            int space = target.Item.MaxCount - target.Item.Count;
+            int move = Mathf.Min(space, incoming.Count);
+
+            target.Item.IncreaseStack(move);
             incoming.DecreaseStack(move);
-
-            if (incoming.StackCount <= 0)
-                return true;
         }
 
-        // 남은 개수가 있으면 새 슬롯으로
-        return AddAsNewSlot(incoming);
+        // 아직 남아 있다면 새 슬롯 필요
+        if (incoming.Count > 0)
+        {
+            var emptySlot = FindFirstEmptySlot();
+            if (emptySlot == null)
+                return false;
+
+            emptySlot.Assign(incoming);
+        }
+
+        return true;
     }
 
     private bool AddAsNewSlot(ItemInstance item)
     {
-        if (items.ContainsKey(item.InstanceId))
-            return false;
-
-        items.Add(item.InstanceId, item);
-        return true;
+        return false;
     }
 
     public bool RemoveItem(Guid instanceId)
@@ -63,7 +155,7 @@ public class Inventory
     public bool AddItem(ItemInstance item)
     {
         if (item.Data.IsStackable)
-            return TryAddStackable(item);
+            return AddStackable(item);
         else
             return AddAsNewSlot(item);
     }
@@ -96,15 +188,15 @@ public class Inventory
         if (source.Data != target.Data) return;
         if (!source.Data.IsStackable) return;
 
-        int targetSpace = target.Data.maxStack - target.StackCount;
+        int targetSpace = target.Data.maxStack - target.Count;
         if (targetSpace <= 0) return;
 
-        int moveCount = Mathf.Min(source.StackCount, targetSpace);
+        int moveCount = Mathf.Min(source.Count, targetSpace);
 
         source.DecreaseStack(moveCount);
         target.IncreaseStack(moveCount);
 
-        if (source.StackCount <= 0)
+        if (source.Count <= 0)
         {
             Remove(source.InstanceId);
         }
@@ -121,7 +213,7 @@ public class Inventory
         if (item == null) return;
         if (!item.Data.IsStackable) return;
         if (count <= 0) return;
-        if (count >= item.StackCount) return;
+        if (count >= item.Count) return;
 
         item.DecreaseStack(count);
 
