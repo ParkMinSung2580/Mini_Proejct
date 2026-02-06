@@ -37,6 +37,8 @@ public class ItemData : ScriptableObject
 
     public Sprite icon;
 
+    public bool maxStack; //maxStack이 1일 시 stackable이 가능하지 않고 1보다 클 시 가능 
+
     public bool canSell;
     public int sellPrice;
 }
