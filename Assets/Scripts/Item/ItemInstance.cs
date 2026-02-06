@@ -21,9 +21,13 @@ public class ItemInstance
         StackCount = stackCount;
     }
 
-    public bool CanStackWith(ItemInstance other)
+    public void DecreaseStack(int amount)
     {
-        //같은 에셋을 로드하기 때문에 같음
-        return (Data == other.Data) && Data.stackable;
+        StackCount -= amount;
+    }
+
+    public void IncreaseStack(int amount)
+    {
+        StackCount += amount;
     }
 }
