@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public enum ItemType
@@ -26,7 +27,6 @@ public enum Rarity
     Legendary
 }
 
-[CreateAssetMenu(menuName = "Item/ItemData")]
 public class ItemData : ScriptableObject
 {
     public string id;
@@ -42,29 +42,14 @@ public class ItemData : ScriptableObject
 
     public bool canSell;
     public int sellPrice;
-}
 
-[CreateAssetMenu(menuName = "Item/ItemData/EquipmentItemData")]
-public class EquipmentItemData : ItemData
-{
-    public EquipmentType equipmentType; 
-    //public StatBlock baseStats;
-}
+    
+    [SerializeField,Space(30)]
+    [Header("type inspector ≥Î√‚")]
+    private string type;
 
-[CreateAssetMenu(menuName = "Item/ItemData/ConsumableItemData")]
-public class ConsumableItemData : ItemData
-{
-
-}
-
-[CreateAssetMenu(menuName = "Item/ItemData/MaterialItemData")]
-public class MaterialItemData : ItemData
-{
-
-}
-
-[CreateAssetMenu(menuName = "Item/ItemData/Etc")]
-public class EtcItemData : ItemData
-{
-
+    private void OnValidate()
+    {
+        type = GetType().Name;
+    }
 }

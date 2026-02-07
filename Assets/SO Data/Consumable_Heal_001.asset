@@ -9,14 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: New Consumable Item Data
-  m_EditorClassIdentifier: Assembly-CSharp::ConsumableItemData
+  m_Script: {fileID: 11500000, guid: fa3b483a342dfac408eb8cf694905d9e, type: 3}
+  m_Name: Consumable_Heal_001
+  m_EditorClassIdentifier: 
   id: Consumable_Heal_001
-  itemName: "\uBE68\uAC04\uD3EC\uC158\uC774\uB2E4"
-  description: "\uBE68\uAC04 \uD3EC\uC158\uC774\uB2E4 Hp\uB97C 50\uC529 \uD68C\uBCF5\uC2DC\uCF1C\uC900\uB2E4."
+  itemName: "\uBE68\uAC04 \uD3EC\uC158"
+  description: "\uC8FC\uD669 \uD3EC\uC158\uC774\uB2E4 Hp\uB97C 50 \uD68C\uBCF5 \uC2DC\uCF1C\uC900\uB2E4."
   rarity: 0
   icon: {fileID: 0}
   maxStack: 10
   canSell: 0
   sellPrice: 0
+  type: ConsumableItemData
