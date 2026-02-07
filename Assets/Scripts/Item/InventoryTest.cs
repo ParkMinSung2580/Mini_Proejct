@@ -23,6 +23,13 @@ public class InventoryTest : MonoBehaviour
         inventory.AddItem(posion3);
         inventory.AddItem(posion4);
 
+        Debug.Log(inventory.GetBagsSize());//inventory.GetBagsSize();
+        Debug.Log(inventory.GetEmptyBagsSize());
+
+        Debug.Log($"[1번 슬롯] 아이템 이름 : {inventory[0].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[0].Item.Count.ToString()}");
+        Debug.Log($"[2번 슬롯] 아이템 이름 : {inventory[1].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[1].Item.Count.ToString()}");
+        Debug.Log($"[3번 슬롯] 아이템 이름 : {inventory[2].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[2].Item.Count.ToString()}");
+        Debug.Log($"[4번 슬롯] 아이템 이름 : {inventory[3].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[3].Item.Count.ToString()}");
     }
 
     // Update is called once per frame

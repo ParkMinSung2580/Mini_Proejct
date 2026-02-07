@@ -244,7 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
   - {fileID: 11400000, guid: a037baa2eea51eb4cae23549e98bdfdc, type: 2}
-  - {fileID: 11400000, guid: f51d5987e3fe4bc4c9d2c476e125e484, type: 2}
+  - {fileID: 11400000, guid: 768d30b30fa71a2499e1d7a68e86e710, type: 2}
 --- !u!1 &954644264
 GameObject:
   m_ObjectHideFlags: 0

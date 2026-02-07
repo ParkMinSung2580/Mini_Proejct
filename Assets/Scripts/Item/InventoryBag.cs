@@ -6,6 +6,14 @@ public class InventoryBag
 {
     public InventorySlot[] Slots { get; }
 
+    // ÀÎµ¦¼­ Ãß°¡
+    public InventorySlot this[int index]
+    {
+        get => Slots[index];
+    }
+
+    public int Size => Slots.Length;
+
     public InventoryBag(int size)
     {
         Slots = new InventorySlot[size];

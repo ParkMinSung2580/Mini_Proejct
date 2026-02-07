@@ -1,10 +1,34 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 public class Inventory
 {
     private List<InventoryBag> bags;
+
+    // 전체 인벤토리를 하나의 배열처럼 접근 
+    public InventorySlot this[int index]
+    {
+        get
+        {
+            int currentIndex = 0;                       // 현재까지 확인한 슬롯 개수
+            foreach (var bag in bags)
+            {
+                // 각 가방의 슬롯을 뒤진다. 
+                if (index < currentIndex + bag.Size)
+                {
+                    // 가방 내부의 로컬 인덱스로 변환
+                    // 전체 인덱스 - 이전까지의 슬롯 개수 = 가방 내 위치
+                    return bag[index - currentIndex];
+                }
+                // 이 가방에 없으면 다음 가방으로
+                currentIndex += bag.Size;
+            }
+            // 모든 가방을 다 찾아봤는데 없으면 에러
+            throw new IndexOutOfRangeException($"슬롯 인덱스 {index}가 범위를 벗어났습니다.");
+        }
+    }
 
     public Inventory()
     {
@@ -39,6 +63,11 @@ public class Inventory
             }
         }
         return size;
+    }
+
+    public ItemInstance GetBagsItem(int count)
+    {
+        return null;
     }
 
     private InventorySlot FindFirstEmptySlot()
