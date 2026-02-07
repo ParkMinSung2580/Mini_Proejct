@@ -6,8 +6,6 @@ public class Inventory
 {
     private List<InventoryBag> bags;
 
-    private Dictionary<Guid, ItemInstance> items;
-
     public Inventory()
     {
         InventoryBag initBag = new(20);             //초기가방 
@@ -15,8 +13,6 @@ public class Inventory
         {
             initBag
         };
-
-        items = new Dictionary<Guid, ItemInstance>();
     }
 
     public int GetBagsSize()
@@ -45,41 +41,21 @@ public class Inventory
         return size;
     }
 
-    // 가방 순서 기준으로 가장 앞에 있는 빈 슬롯을 반환
-    public InventorySlot FindFirstEmptySlot()
+    private InventorySlot FindFirstEmptySlot()
     {
         //처음 백부터 뒤져서 
         foreach (var bag in bags)
         {
             foreach (var slot in bag.Slots)
             {
-                if (slot.IsEmpty)
-                {
-                    return slot;
-                }
+                if (slot.IsEmpty) return slot;
             }
         }
         return null;
     }
 
-    /*public InventorySlot FindCombineSlot(ItemInstance item)
-    {
-        //같은 아이템이 존재하면 만약 Stackable인 친구이면 Combine할 Slot을 찾아줘야함.
-        foreach (var bag in bags)
-        {
-            foreach (var slot in bag.Slots)
-            {
-                if (item == slot.Item)
-                {
-                    
-                }
-            }
-        }
-        return null;
-    }*/
-
-    //해당 아이템과 같은 Stack형 아이템이 bag안에 있는지 조사하는 함수
-    private bool TryFindCombineSlot(ItemInstance incoming,out InventorySlot result)
+    //해당 아이템과 같은 Stack형 아이템이 bag안에 있는지 조사하는 함수 out파라메터로 Slot 반환
+    public bool TryFindCombineSlot(ItemInstance incoming,out InventorySlot result)
     {
         result = null;
 
@@ -103,7 +79,7 @@ public class Inventory
         return false;
     }
 
-    private bool AddStackable(ItemInstance incoming)
+    private bool AddStackableItem(ItemInstance incoming)
     {
         while (incoming.Count > 0 && TryFindCombineSlot(incoming, out var combineSlot))
         {
@@ -129,20 +105,21 @@ public class Inventory
         return true;
     }
 
+
     private bool AddAsNewSlot(ItemInstance item)
     {
-        return false;
+        InventorySlot newSlot = FindFirstEmptySlot();
+
+        if (newSlot == null) return false;
+            
+        newSlot.Assign(item);
+
+        return true;
     }
 
     public bool RemoveItem(Guid instanceId)
     {
-        if (!items.Remove(instanceId))
-        {
-            Debug.LogWarning($"삭제 실패 - 존재하지 않는 ItemInstanceId : {instanceId}");
-            return false;
-        }
 
-        Debug.Log($"인벤토리 삭제: {instanceId}");
         return true;
     }
 
@@ -154,26 +131,28 @@ public class Inventory
     /// <returns></returns>
     public bool AddItem(ItemInstance item)
     {
+        if (item == null || item.Count == 0) return false;
+
         if (item.Data.IsStackable)
-            return AddStackable(item);
+            return AddStackableItem(item);
         else
             return AddAsNewSlot(item);
     }
 
     public void CombineItem(Guid sourceId, Guid targetId)
     {
-        if (!items.TryGetValue(sourceId, out var source)) return;
-        if (!items.TryGetValue(targetId, out var target)) return;
+        //if (!items.TryGetValue(sourceId, out var source)) return;
+        //if (!items.TryGetValue(targetId, out var target)) return;
 
-        CombineItem(source, target);
+        //CombineItem(source, target);
     }
 
-    public void DivideItem(Guid targetId,int count)
+    /*public void DivideItem(Guid targetId,int count)
     {
         if (!items.TryGetValue(targetId, out var target)) return;
 
         DivideItem(target,count);
-    }
+    }*/
 
     #endregion
 
@@ -198,17 +177,17 @@ public class Inventory
 
         if (source.Count <= 0)
         {
-            Remove(source.InstanceId);
+            //Remove(source.InstanceId);
         }
     }
 
-    private bool Remove(Guid instanceId) 
+    /*private bool Remove(Guid instanceId) 
     {
         return items.Remove(instanceId);
-    }
+    }*/
 
     //인벤토리 나누기 기능
-    public void DivideItem(ItemInstance item, int count)
+    /*public void DivideItem(ItemInstance item, int count)
     {
         if (item == null) return;
         if (!item.Data.IsStackable) return;
@@ -220,5 +199,5 @@ public class Inventory
         ItemInstance newItem = new ItemInstance(item.Data, count);
 
         items.Add(newItem.InstanceId, newItem);
-    }
+    }*/
 }

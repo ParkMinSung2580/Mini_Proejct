@@ -29,7 +29,7 @@ public enum Rarity
 [CreateAssetMenu(menuName = "Item/ItemData")]
 public class ItemData : ScriptableObject
 {
-    public int id;
+    public string id;
     public string itemName;
     [TextArea] public string description;
 
@@ -44,18 +44,27 @@ public class ItemData : ScriptableObject
     public int sellPrice;
 }
 
+[CreateAssetMenu(menuName = "Item/ItemData/EquipmentItemData")]
 public class EquipmentItemData : ItemData
 {
     public EquipmentType equipmentType; 
     //public StatBlock baseStats;
 }
 
+[CreateAssetMenu(menuName = "Item/ItemData/ConsumableItemData")]
 public class ConsumableItemData : ItemData
 {
 
 }
 
+[CreateAssetMenu(menuName = "Item/ItemData/MaterialItemData")]
 public class MaterialItemData : ItemData
+{
+
+}
+
+[CreateAssetMenu(menuName = "Item/ItemData/Etc")]
+public class EtcItemData : ItemData
 {
 
 }
