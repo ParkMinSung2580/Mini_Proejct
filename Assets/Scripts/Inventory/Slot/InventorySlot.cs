@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,9 +13,11 @@ public class InventorySlot
 
     public bool CanStack(ItemInstance item)
     {
+        /*return !IsEmpty && Item.CanStackWith(incoming);
         if (item == null || IsEmpty || Item.Data != item.Data || !Item.Data.IsStackable) return false;
 
-        return Item.Count < Item.Data.maxStack;
+        return Item.Count < Item.Data.maxStack;*/
+        return ItemStackRule.CanStack(Item, item);
     }
 
     public void Assign(ItemInstance item)

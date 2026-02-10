@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class Inventory
 {
     private List<InventoryBag> bags;
 
-    // 전체 인벤토리를 하나의 배열처럼 접근 
+    //전체 인벤토리를 하나의 배열처럼 접근 반환값 Slot
     public InventorySlot this[int index]
     {
         get
@@ -32,11 +33,13 @@ public class Inventory
 
     public Inventory()
     {
+        #region 테스트 Init()
         InventoryBag initBag = new(20);             //초기가방 
         bags = new List<InventoryBag>
         {
             initBag
         };
+        #endregion
     }
 
     public int GetBagsSize()
@@ -65,9 +68,21 @@ public class Inventory
         return size;
     }
 
-    public ItemInstance GetBagsItem(int count)
+    //아이템 접근 api
+    public ItemInstance GetItem(int index)
     {
-        return null;
+        return this[index].Item;
+    }
+
+    public void UseItem(ItemInstance item)
+    {
+        foreach (var feature in item.GetFeatures<IUseFeature>())
+        {
+            feature.Use();
+        }
+
+        var stack = item.GetProperty<StackProperty>();
+        stack?.DecreaseStack(1);
     }
 
     private InventorySlot FindFirstEmptySlot()
@@ -148,8 +163,23 @@ public class Inventory
 
     public bool RemoveItem(Guid instanceId)
     {
+        foreach (var bag in bags)
+        {
+            foreach (var slot in bag.Slots)
+            {
+                if (!slot.IsEmpty && slot.Item.InstanceId == instanceId)
+                {
+                    slot.Clear();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-        return true;
+    public bool RemoveItem(InventorySlot slot,Index count)
+    {
+        return false;
     }
 
     #region 외부 API
@@ -162,10 +192,7 @@ public class Inventory
     {
         if (item == null || item.Count == 0) return false;
 
-        if (item.Data.IsStackable)
-            return AddStackableItem(item);
-        else
-            return AddAsNewSlot(item);
+        return item.Data.IsStackable ? AddStackableItem(item) : AddAsNewSlot(item);
     }
 
     public void CombineItem(Guid sourceId, Guid targetId)

@@ -10,16 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa3b483a342dfac408eb8cf694905d9e, type: 3}
-  m_Name: Consumable_Heal_001
+  m_Name: Consumable_BuffAndHeal_001
   m_EditorClassIdentifier: 
-  id: Consumable_Heal_001
-  itemName: "\uBE68\uAC04 \uD3EC\uC158"
-  description: "\uBE68 \uD3EC\uC158\uC774\uB2E4. Hp\uB97C 50 \uD68C\uBCF5 \uC2DC\uCF1C\uC900\uB2E4."
+  id: Consumable_BuffAndHeal_001
+  itemName: "\uC5D0\uB108\uC9C0\uB4DC\uB9C1\uD06C"
+  description: "\uC560\uB108\uC9C0 \uB4DC\uB9C1\uD06C\uC774\uB2E4. hp\uAC00 100 \uD68C\uBCF5\uD558\uACE0
+    \uACF5\uACA9\uB825\uC774 20\uD504\uB85C \uAC15\uD574\uC9C4\uB2E4."
   rarity: 0
   icon: {fileID: 0}
   Properties:
   - {fileID: 11400000, guid: f0baae1d67174944ea5b09ba05a8b0f4, type: 2}
   Features:
+  - {fileID: 11400000, guid: 8050642137b1e2840bc7e774416b50ea, type: 2}
   - {fileID: 11400000, guid: a5c52ec602e1ac54699bd00002e72ee0, type: 2}
   maxStack: 10
   canSell: 0

@@ -14,9 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: Consumable_Heal_002
   itemName: "\uC8FC\uD669 \uD3EC\uC158"
-  description: "\uC8FC\uD669 \uD3EC\uC158\uC774\uB2E4 Hp\uB97C 150 \uD68C\uBCF5 \uC2DC\uCF1C\uC900\uB2E4."
+  description: "\uC8FC\uD669 \uD3EC\uC158\uC774\uB2E4. Hp\uB97C 150 \uD68C\uBCF5
+    \uC2DC\uCF1C\uC900\uB2E4."
   rarity: 0
   icon: {fileID: 0}
+  Properties:
+  - {fileID: 11400000, guid: f0baae1d67174944ea5b09ba05a8b0f4, type: 2}
+  Features:
+  - {fileID: 11400000, guid: a5c52ec602e1ac54699bd00002e72ee0, type: 2}
   maxStack: 10
   canSell: 0
   sellPrice: 0

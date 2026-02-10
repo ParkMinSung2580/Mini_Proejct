@@ -37,6 +37,9 @@ public class ItemData : ScriptableObject
 
     public Sprite icon;
 
+    public List<ItemPropertySO> Properties;
+    public List<ItemFeatureSO> Features;
+
     public int maxStack; //maxStack이 1일 시 stackable이 가능하지 않고 1보다 클 시 가능 
     public bool IsStackable => maxStack > 1;
 
