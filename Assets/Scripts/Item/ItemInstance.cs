@@ -11,65 +11,45 @@ public class ItemInstance
 
     public Guid InstanceId => Guid.Parse(instanceId);
 
+    public ItemData Data { get; private set; }
+
+    private StackProperty stack;
+    public int CurrentCount => stack.Count;
+
     private List<IItemProperty> Properties = new();
     private List<IItemFeature> Features = new();
 
     public T GetProperty<T>() where T : class, IItemProperty
-        //    => Properties.Find(p => p is T) as T;
+        => Properties.Find(p => p is T) as T;
+
+    public bool HasProperty<T>() where T : class, IItemProperty
     {
-        Debug.Log(Properties.Find(p => p is T) as T);
-        return Properties.Find(p => p is T) as T;      
+        return Properties.Any(p => p is T);
     }
 
     public IEnumerable<T> GetFeatures<T>() where T : class, IItemFeature
-        //    => Features.OfType<T>().ToList();
+        => Features.OfType<T>();
+
+    public bool HasFeature<T>() where T : class, IItemFeature
     {
-        Debug.Log($"GetFeatures<{typeof(T).Name}> called");
-        Debug.Log($"Features count: {Features?.Count ?? -1}");
-
-        var result = Features?.OfType<T>().ToList() ?? new List<T>();
-
-        Debug.Log($"Found {result.Count} features");
-        return result;
+        return Features.Any(f => f is T);
     }
 
-    public ItemData Data { get; private set; }
-
-
-    //public int Count { get; set; }
-
-    //public int MaxCount { get => Data.maxStack; }
-
-    public bool CanStackWith(ItemInstance other)
-    {
-        if (other == null) return false;
-        if (Data != other.Data) return false;
-        if (!Data.IsStackable) return false;
-
-        return Count < Data.maxStack;
-    }
-
-    public ItemInstance(ItemData data, int stackCount = 1)
+    public ItemInstance(ItemData data, int initialCount = 1)
     {
         instanceId = Guid.NewGuid().ToString(); 
         Data = data;
-        Count = stackCount;
 
         // SO에서 Property 생성
         Properties = data.Properties.Select(p => p.CreateProperty()).ToList();
 
         // SO에서 Feature 생성
         Features = data.Features.Select(f => f.CreateFeature()).ToList();
-  
-    }
 
-    public void DecreaseStack(int amount)
-    {
-        Count -= amount;
-    }
-
-    public void IncreaseStack(int amount)
-    {
-        Count += amount;
+        stack = GetProperty<StackProperty>();
+        if (stack == null)
+            throw new Exception("ItemInstance에는 StackProperty가 반드시 존재해야 합니다.");
+        else
+            stack.SetInitialCount(initialCount);
     }
 }

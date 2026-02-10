@@ -24,42 +24,42 @@ public class InventoryTest : MonoBehaviour
         ItemInstance posion4 = new(data[1], 5);
 
         inventory.AddItem(posion1);
-        //inventory.AddItem(posion2);
-        //inventory.AddItem(posion3);
-        //inventory.AddItem(posion4);
+        inventory.AddItem(posion2);
+        inventory.AddItem(posion3);
+        inventory.AddItem(posion4);
 
         //Debug.Log(inventory.GetBagsSize());//inventory.GetBagsSize();
         Debug.Log(inventory.GetEmptyBagsSize());
-        /*
-        Debug.Log($"[1번 슬롯] 아이템 이름 : {inventory[0].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[0].Item.Count.ToString()}");
-        Debug.Log($"[2번 슬롯] 아이템 이름 : {inventory[1].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[1].Item.Count.ToString()}");
-        Debug.Log($"[3번 슬롯] 아이템 이름 : {inventory[2].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[2].Item.Count.ToString()}");
-        Debug.Log($"[4번 슬롯] 아이템 이름 : {inventory[3].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[3].Item.Count.ToString()}");*/
+        
+        Debug.Log($"[1번 슬롯] 아이템 이름 : {inventory[0].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[0].Item.CurrentCount}");
+        Debug.Log($"[2번 슬롯] 아이템 이름 : {inventory[1].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[1].Item.CurrentCount}");
+        Debug.Log($"[3번 슬롯] 아이템 이름 : {inventory[2].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[2].Item.CurrentCount}");
+        Debug.Log($"[4번 슬롯] 아이템 이름 : {inventory[3].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[3].Item.CurrentCount}");
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*if(Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetKeyDown(KeyCode.Q))
         {
             inventory.UseItem(inventory[0].Item);
-            Debug.Log($"[1번 슬롯] 아이템 이름 : {inventory[0].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[0].Item.Count.ToString()}");
+            Debug.Log($"[1번 슬롯] 아이템 이름 : {inventory[0].Item.Data.itemName}, 아이템 개수 {inventory[0].Item.CurrentCount}");
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
             inventory.UseItem(inventory[1].Item);
-            Debug.Log($"[2번 슬롯] 아이템 이름 : {inventory[1].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[1].Item.Count.ToString()}");
+            Debug.Log($"[2번 슬롯] 아이템 이름 : {inventory[1].Item.Data.itemName}, 아이템 개수 {inventory[1].Item.CurrentCount}");
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
             inventory.UseItem(inventory[2].Item);
-            Debug.Log($"[3번 슬롯] 아이템 이름 : {inventory[2].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[2].Item.Count.ToString()}");
+            Debug.Log($"[3번 슬롯] 아이템 이름 : {inventory[2].Item.Data.itemName}, 아이템 개수 {inventory[2].Item.CurrentCount}");
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
             inventory.UseItem(inventory[3].Item);
-            Debug.Log($"[4번 슬롯] 아이템 이름 : {inventory[3].Item.Data.itemName.ToString()}, 아이템 개수 {inventory[3].Item.Count.ToString()}");
-        }*/
+            Debug.Log($"[4번 슬롯] 아이템 이름 : {inventory[3].Item.Data.itemName}, 아이템 개수 {inventory[3].Item.CurrentCount}");
+        }
     }
 }
 

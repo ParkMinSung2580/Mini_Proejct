@@ -17,7 +17,7 @@ public class InventorySlot
         if (item == null || IsEmpty || Item.Data != item.Data || !Item.Data.IsStackable) return false;
 
         return Item.Count < Item.Data.maxStack;*/
-        return ItemStackRule.CanStack(Item, item);
+        return ItemStackRule.CanStack(item, Item);
     }
 
     public void Assign(ItemInstance item)

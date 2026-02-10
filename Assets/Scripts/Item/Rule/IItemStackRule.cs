@@ -16,7 +16,7 @@ public class DefaultStackRule : IItemStackRule
         if (a.Data != b.Data) return false;
         if (!a.Data.IsStackable) return false;
 
-        return a.Count < a.Data.maxStack;
+        return a.CurrentCount < a.Data.maxStack;
     }
 }
 
