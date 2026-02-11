@@ -49,7 +49,8 @@ public static class ItemStackRule
 
         Debug.Log(stackA == null || stackB == null);
         if (stackA == null || stackB == null) return false;
-        
-        return stackA.Count < stackA.MaxStack;
+
+        return stackB.Count < stackB.MaxStack;
+        //return stackA.Count < stackA.MaxStack;
     }
 }

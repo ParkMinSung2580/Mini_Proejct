@@ -144,7 +144,14 @@ public class Inventory
             if (emptySlot == null)
                 return false;
 
-            emptySlot.Assign(incoming);
+            int remain = from.Count;
+
+            // 기존 incoming은 0으로 만들고
+            from.DecreaseStack(remain);
+
+            ItemInstance newItem = new ItemInstance(incoming.Data, remain);
+
+            emptySlot.Assign(newItem);
         }
 
         return true;
@@ -191,6 +198,13 @@ public class Inventory
     /// <returns></returns>
     public bool AddItem(ItemInstance item)
     {
+        if (GetEmptyBagsSize() == 0)
+        {
+            Debug.Log("더 이상 인벤토리에 넣을 수 없습니다.");
+            return false;
+        }
+
+        Debug.Log("ADD호출");
         if (item == null)
             return false;
 

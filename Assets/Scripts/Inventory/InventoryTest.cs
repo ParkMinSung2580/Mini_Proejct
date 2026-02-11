@@ -18,10 +18,15 @@ public class InventoryTest : MonoBehaviour
         Debug.Log(inventory.GetBagsSize());//inventory.GetBagsSize();
         Debug.Log(inventory.GetEmptyBagsSize());
 
-        ItemInstance posion1 = new(data[0], 2);
+        ItemInstance posion1 = new(data[0], 10);
         ItemInstance posion2 = new(data[0], 3);
         ItemInstance posion3 = new(data[1], 9);
         ItemInstance posion4 = new(data[1], 5);
+
+        for (int i = 0; i < 17; i++)
+        {
+            inventory.AddItem(new ItemInstance(data[0],10));
+        }
 
         inventory.AddItem(posion1);
         inventory.AddItem(posion2);

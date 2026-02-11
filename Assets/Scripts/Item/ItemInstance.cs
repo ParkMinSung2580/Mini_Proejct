@@ -52,4 +52,13 @@ public class ItemInstance
         else
             stack.SetInitialCount(initialCount);
     }
+
+    public ItemInstance Split(int count)
+    {
+        if (count > stack.Count)
+            throw new ArgumentException("분할할 수량이 현재 수량보다 많습니다.");
+
+        stack.DecreaseStack(count);
+        return new ItemInstance(Data, count);
+    }
 }
