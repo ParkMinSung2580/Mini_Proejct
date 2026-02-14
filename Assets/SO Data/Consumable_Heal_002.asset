@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Consumable_Heal_002
   m_EditorClassIdentifier: 
   id: Consumable_Heal_002
-  itemName: "\uC8FC\uD669 \uD3EC\uC158"
-  description: "\uC8FC\uD669 \uD3EC\uC158\uC774\uB2E4. Hp\uB97C 150 \uD68C\uBCF5
-    \uC2DC\uCF1C\uC900\uB2E4."
+  itemName: "\uC885\uD615 \uD68C\uBCF5 \uD3EC\uC158"
+  description: "\uC911\uD615 \uD68C\uBCF5 \uD3EC\uC158\uC774\uB2E4. Hp\uB97C 150
+    \uD68C\uBCF5 \uC2DC\uCF1C\uC900\uB2E4."
   rarity: 0
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 2ee263a69259ae24fb469be7f93dce20, type: 3}
   Properties:
   - {fileID: 11400000, guid: f0baae1d67174944ea5b09ba05a8b0f4, type: 2}
   Features:

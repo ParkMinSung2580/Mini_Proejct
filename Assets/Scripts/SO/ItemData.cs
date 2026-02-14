@@ -29,24 +29,42 @@ public enum Rarity
 
 public class ItemData : ScriptableObject
 {
-    public string id;
-    public string itemName;
-    [TextArea] public string description;
+    [SerializeField] private string id;
+    public string ID => id;
 
-    public Rarity rarity;
+    [SerializeField] private string itemName;
 
-    public Sprite icon;
+    public string ItemName => itemName;
 
-    public List<ItemPropertySO> Properties;
-    public List<ItemFeatureSO> Features;
+    [SerializeField][TextArea] private string description;
 
-    public int maxStack; //maxStack이 1일 시 stackable이 가능하지 않고 1보다 클 시 가능 
+    public string Description => description;
+
+    [SerializeField] private Rarity rarity;
+    public Rarity Rarity => rarity;
+
+    [SerializeField] private Sprite icon;
+    public Sprite Icon => icon;
+
+    [SerializeField] private List<ItemPropertySO> properties;
+    public IReadOnlyList<ItemPropertySO> Properties => properties;
+
+    [SerializeField] private List<ItemFeatureSO> features;
+    public IReadOnlyList<ItemFeatureSO> Features => features;
+
+    [SerializeField] private int maxStack = 1;
+    public int MaxStack => maxStack;
     public bool IsStackable => maxStack > 1;
 
-    public bool canSell;
-    public int sellPrice;
+    /*
+    [SerializeField] private bool canSell;
+    public bool CanSell => canSell;
 
-    
+    [SerializeField] private int sellPrice;
+    public int SellPrice => sellPrice;
+    */
+
+
     [SerializeField,Space(30)]
     [Header("type inspector 노출")]
     private string type;

@@ -46,6 +46,10 @@ public class ItemInstance
         // SO에서 Feature 생성
         Features = data.Features.Select(f => f.CreateFeature()).ToList();
 
+        
+        // 여기서 Data 기반으로 Property 생성
+        Properties.Add(new StackProperty(maxStack:data.MaxStack));
+
         stack = GetProperty<StackProperty>();
         if (stack == null)
             throw new Exception("ItemInstance에는 StackProperty가 반드시 존재해야 합니다.");
