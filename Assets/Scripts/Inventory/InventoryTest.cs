@@ -10,7 +10,7 @@ public class InventoryTest : MonoBehaviour
 
     void Awake()
     {
-        inventory = new Inventory(); // Awake에서 초기화
+        //inventory = new Inventory(); // Awake에서 초기화
     }
     // Start is called before the first frame update
     void Start()
