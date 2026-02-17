@@ -32,7 +32,7 @@ public class Inventory
     public Inventory()
     {
         #region 테스트 Init()
-        InventoryBag initBag = new(20);             //초기가방 
+        InventoryBag initBag = new(200);             //초기가방 
         bags = new List<InventoryBag>
         {
             initBag

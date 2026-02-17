@@ -22,6 +22,7 @@ public class InventoryTest : MonoBehaviour
         ItemInstance posion2 = new(data[0], 3);
         ItemInstance posion3 = new(data[1], 9);
         ItemInstance posion4 = new(data[1], 5);
+        ItemInstance buff_Posion = new(data[2], 5);
 
         /*for (int i = 0; i < 12; i++)
         {
@@ -33,6 +34,7 @@ public class InventoryTest : MonoBehaviour
         inventory.AddItem(posion2);
         inventory.AddItem(posion3);
         inventory.AddItem(posion4);
+        inventory.AddItem(buff_Posion);
 
         //Debug.Log(inventory.GetBagsSize());//inventory.GetBagsSize();
         Debug.Log(inventory.GetEmptyBagsSize());

@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
-
-public class InventorySlotUI : MonoBehaviour
+public class InventorySlotUI : MonoBehaviour//, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image icon;
     [SerializeField] private TextMeshProUGUI countText;
@@ -14,10 +14,10 @@ public class InventorySlotUI : MonoBehaviour
     public void Init(int slotIndex, Action<int> onClick)
     {
         index = slotIndex;
-        GetComponent<Button>().onClick.AddListener(() =>
+        /*GetComponent<Button>().onClick.AddListener(() =>
         {
             onClick?.Invoke(index);
-        });
+        });*/
     }
 
     public void Set(ItemInstance item, int count)
@@ -35,4 +35,13 @@ public class InventorySlotUI : MonoBehaviour
         countText.text = "";
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        throw new NotImplementedException();
+    }
 }
