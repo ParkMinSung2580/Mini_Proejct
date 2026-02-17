@@ -47,7 +47,6 @@ public static class ItemStackRule
         var stackA = a.GetProperty<StackProperty>();
         var stackB = b.GetProperty<StackProperty>();
 
-        Debug.Log(stackA == null || stackB == null);
         if (stackA == null || stackB == null) return false;
 
         return stackB.Count < stackB.MaxStack;

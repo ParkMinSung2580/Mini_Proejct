@@ -64,6 +64,23 @@ public class ItemData : ScriptableObject
     public int SellPrice => sellPrice;
     */
 
+    /*
+    public IEnumerable<IItemProperty> CreateProperties()
+    {
+        foreach (var p in Properties)
+            yield return p.CreateProperty();
+
+        if (MaxStack > 1)
+            yield return new StackProperty(maxStack:MaxStack);
+    }
+
+    public IEnumerable<IItemFeature> CreateFeatures()
+    {
+        foreach (var f in Features)
+            yield return f.CreateFeature();
+    }
+    */
+
 
     [SerializeField,Space(30)]
     [Header("type inspector ≥Î√‚")]

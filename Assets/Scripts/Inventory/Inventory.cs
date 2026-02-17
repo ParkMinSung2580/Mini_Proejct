@@ -198,13 +198,6 @@ public class Inventory
     /// <returns></returns>
     public bool AddItem(ItemInstance item)
     {
-        if (GetEmptyBagsSize() == 0)
-        {
-            Debug.Log("더 이상 인벤토리에 넣을 수 없습니다.");
-            return false;
-        }
-
-        Debug.Log("ADD호출");
         if (item == null)
             return false;
 
@@ -214,8 +207,8 @@ public class Inventory
 
         if (stack.CanStack)
             return AddStackableItem(item);
-        else
-            return AddAsNewSlot(item);
+        
+        return AddAsNewSlot(item);
     }
 
     public void CombineItem(Guid sourceId, Guid targetId)

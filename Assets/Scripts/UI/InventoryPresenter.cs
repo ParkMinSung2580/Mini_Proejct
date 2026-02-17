@@ -10,7 +10,7 @@ public class InventoryPresenter
     private IInventoryView view;
     private MonoBehaviour runner;
 
-    private float refreshInterval = 0.5f;
+    private float refreshInterval = 5f;
     private Coroutine refreshRoutine;
 
     public InventoryPresenter(Inventory model, IInventoryView view, MonoBehaviour runner)
@@ -51,7 +51,6 @@ public class InventoryPresenter
     private void Refresh()
     {
         Debug.Log("인벤토리 Refresh");
-        Debug.Log($"{model.GetBagsSize()}");
 
         for (int i = 0; i < model.GetBagsSize(); i++)
         {
@@ -64,7 +63,6 @@ public class InventoryPresenter
             }
             else
             {
-                Debug.Log($"{i + 1}번째 슬롯에는 템이 존재하지않습니다");
                 view.ClearSlot(i);
             }
         }

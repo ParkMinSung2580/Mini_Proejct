@@ -23,11 +23,11 @@ public class InventoryTest : MonoBehaviour
         ItemInstance posion3 = new(data[1], 9);
         ItemInstance posion4 = new(data[1], 5);
 
-        for (int i = 0; i < 17; i++)
+        /*for (int i = 0; i < 12; i++)
         {
             //new ItemInstance만 사용해야한다.
-            inventory.AddItem(new ItemInstance(data[0],10));
-        }
+            inventory.AddItem(new(data[0],10));
+        }*/
 
         inventory.AddItem(posion1);
         inventory.AddItem(posion2);

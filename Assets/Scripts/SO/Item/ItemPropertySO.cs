@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class ItemPropertySO : ScriptableObject
 {
-    public abstract IItemProperty CreateProperty();
+    public abstract IItemProperty CreateProperty(ItemInstance owner);
 }

@@ -40,21 +40,24 @@ public class ItemInstance
         instanceId = Guid.NewGuid().ToString(); 
         Data = data;
 
+        #region Propertiy Feature의 생성 책임 분리  -> itemData쪽에서 책임 지고 생성하도록
+        
         // SO에서 Property 생성
-        Properties = data.Properties.Select(p => p.CreateProperty()).ToList();
-
+        Properties = data.Properties.Select(p => p.CreateProperty(this)).ToList();
         // SO에서 Feature 생성
         Features = data.Features.Select(f => f.CreateFeature()).ToList();
-
         
+        //Properties = data.CreateProperties().ToList();
+        //Features = data.CreateFeatures().ToList();
+        #endregion
+
+
         // 여기서 Data 기반으로 Property 생성
-        Properties.Add(new StackProperty(maxStack:data.MaxStack));
+        Properties.Add(new StackProperty(this, initialCount));
 
         stack = GetProperty<StackProperty>();
         if (stack == null)
-            throw new Exception("ItemInstance에는 StackProperty가 반드시 존재해야 합니다.");
-        else
-            stack.SetInitialCount(initialCount);
+            throw new Exception("ItemInstance에는 StackProperty가 반드시 존재해야 합니다."); 
     }
 
     public ItemInstance Split(int count)
